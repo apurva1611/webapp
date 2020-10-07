@@ -1,6 +1,7 @@
 package main
 
 import (
+	_"github.com/go-sql-driver/mysql"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -10,6 +11,7 @@ import (
 )
 
 func main() {
+	createDb()
 	router := SetupRouter()
 	log.Fatal(router.Run(":8080"))
 }
