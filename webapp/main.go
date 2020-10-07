@@ -48,7 +48,26 @@ func GetUserSelf(c *gin.Context) {
 }
 
 func UpdateUserSelf(c *gin.Context) {
+	authHeader := c.Request.Header.Get("Authorization")
 
+	id, err := ParseToken(authHeader)
+	if err != nil {
+		c.JSON(http.StatusNoContent, "")
+		return
+	}
+
+	log.Print(id)
+	// TODO: query id on database
+
+	updatedUser := User{}
+	if c.ShouldBindJSON(&updatedUser) == nil {
+		// these values cannot be updated by the user
+		if updatedUser.AccountCreated != "" || updatedUser.AccountUpdated != "" || updatedUser.ID != "" {
+			c.JSON(http.StatusBadRequest, "")
+		}
+
+		// TODO put the updatedUser to the database
+	}
 }
 
 func CreateUser(c *gin.Context) {
