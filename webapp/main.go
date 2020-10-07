@@ -76,7 +76,7 @@ func CreateUser(c *gin.Context) {
 		// TODO: check if username already exists
 
 		// if username is not a valid email respond 400
-		if !isEmailValid(user.Username) {
+		if !IsEmailValid(user.Username) {
 			c.String(http.StatusBadRequest, "")
 			return
 		}
