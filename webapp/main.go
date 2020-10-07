@@ -20,6 +20,7 @@ func SetupRouter() *gin.Engine {
 	v1 := router.Group("/v1")
 	{
 		v1.POST("/user", CreateUser)
+		v1.GET("/user/:id", GetUser)
 	}
 
 	fmt.Printf("http://localhost:8080")
@@ -59,6 +60,15 @@ func CreateUser(c *gin.Context) {
 
 		c.JSON(http.StatusOK, resp)
 	} else {
-		c.String(http.StatusBadRequest, "")
+		c.JSON(http.StatusBadRequest, "")
 	}
+}
+
+func GetUser(c *gin.Context) {
+	id := c.Param("id")
+	print(id)
+
+	// TODO query id on database
+
+	c.JSON(http.StatusOK, "")
 }
