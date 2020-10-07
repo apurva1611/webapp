@@ -81,6 +81,12 @@ func CreateUser(c *gin.Context) {
 			return
 		}
 
+		// if password is not a valid password respond 400
+		if !IsPasswordValid(user.Password) {
+			c.String(http.StatusBadRequest, "")
+			return
+		}
+
 		// generate (Version 4) UUID
 		uid, _ := uuid.NewRandom()
 		user.ID = uid.String()

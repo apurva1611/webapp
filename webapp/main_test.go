@@ -15,7 +15,7 @@ func TestCreateUserSuccess(t *testing.T) {
 	router := SetupRouter()
 
 	w := httptest.NewRecorder()
-	var jsonStr = []byte("{\n  \"first_name\": \"Jane\",\n  \"last_name\": \"Doe\",\n  \"password\": \"skdjfhskdfjhg\",\n  \"username\": \"jane.doe@example.com\"\n}")
+	var jsonStr = []byte("{\n  \"first_name\": \"Jane\",\n  \"last_name\": \"Doe\",\n  \"password\": \"pass@123\",\n  \"username\": \"jane.doe@example.com\"\n}")
 	req, _ := http.NewRequest("POST", "/v1/user", bytes.NewBuffer(jsonStr))
 	router.ServeHTTP(w, req)
 
@@ -33,7 +33,7 @@ func TestCreateUserFail(t *testing.T) {
 	router := SetupRouter()
 
 	w := httptest.NewRecorder()
-	var jsonStr = []byte("{\n  \"last_name\": \"Doe\",\n  \"password\": \"skdjfhskdfjhg\",\n  \"username\": \"jane.doe@example.com\"\n}")
+	var jsonStr = []byte("{\n  \"last_name\": \"Doe\",\n  \"password\": \"pass@123\",\n  \"username\": \"jane.doe@example.com\"\n}")
 	req, _ := http.NewRequest("POST", "/v1/user", bytes.NewBuffer(jsonStr))
 	router.ServeHTTP(w, req)
 
@@ -45,7 +45,7 @@ func TestGetUserSelf(t *testing.T) {
 
 	// create user to get the token
 	w := httptest.NewRecorder()
-	var jsonStr = []byte("{\n  \"first_name\": \"Jane\",\n  \"last_name\": \"Doe\",\n  \"password\": \"skdjfhskdfjhg\",\n  \"username\": \"jane.doe@example.com\"\n}")
+	var jsonStr = []byte("{\n  \"first_name\": \"Jane\",\n  \"last_name\": \"Doe\",\n  \"password\": \"pass@123\",\n  \"username\": \"jane.doe@example.com\"\n}")
 	req, _ := http.NewRequest("POST", "/v1/user", bytes.NewBuffer(jsonStr))
 	router.ServeHTTP(w, req)
 
