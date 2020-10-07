@@ -4,28 +4,56 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"golang.org/x/crypto/bcrypt"
+	"log"
 	"net/http"
+	"strings"
 	"time"
 )
 
 func main() {
 	router := SetupRouter()
-	router.Run(":8080")
+	log.Fatal(router.Run(":8080"))
 }
 
 func SetupRouter() *gin.Engine {
 	router := gin.Default()
 
 	v1 := router.Group("/v1")
+	authorized := v1.Group("/user/self/")
+	authorized.Use(AuthMW(secret))
 	{
+		authorized.PUT("", UpdateUserSelf)
 		v1.POST("/user", CreateUser)
-		v1.GET("/user/:id", GetUser)
+		// user/:id includes user/self, so routing is handled in GetUserWithId
+		v1.GET("/user/:id", GetUserWithId, AuthMW(secret), GetUserSelf)
 	}
 
 	fmt.Printf("http://localhost:8080")
 
 	return router
+}
+
+func GetUserSelf(c *gin.Context) {
+	// get Authorization header "Bearer <token>"
+	authHeader := c.Request.Header.Get("Authorization")
+	// split ["Bearer", <token>"]
+	bearerToken := strings.Split(authHeader, " ")
+	// get the <token>
+	token := bearerToken[len(bearerToken)-1]
+
+	id, err := ParseToken(token)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, "")
+	}
+
+	log.Print(id)
+	// TODO: query id on database
+
+	c.JSON(http.StatusOK, gin.H{"id": id})
+}
+
+func UpdateUserSelf(c *gin.Context) {
+
 }
 
 func CreateUser(c *gin.Context) {
@@ -44,7 +72,8 @@ func CreateUser(c *gin.Context) {
 		user.ID = uid.String()
 
 		// bcrypt password, library uses salt internally
-		hash, _ := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+		hash := BcryptAndSalt(user.Password)
+		user.Password = string(hash)
 
 		// get current time in UTC
 		currentTime := time.Now().UTC()
@@ -56,17 +85,26 @@ func CreateUser(c *gin.Context) {
 
 		// remove the password from response
 		resp := user
-		resp.Password = string(hash)
+		resp.Password = ""
 
-		c.JSON(http.StatusOK, resp)
+		// create JWT token
+		token := CreateToken(user.ID)
+
+		c.JSON(http.StatusOK, gin.H{"user": resp, "token": token})
 	} else {
 		c.JSON(http.StatusBadRequest, "")
 	}
 }
 
-func GetUser(c *gin.Context) {
+func GetUserWithId(c *gin.Context) {
 	id := c.Param("id")
 	print(id)
+
+	// if v1/user/self is called, skip this function and move to auth middleware
+	if id == "self" {
+		c.Next()
+		return
+	}
 
 	// TODO query id on database
 
