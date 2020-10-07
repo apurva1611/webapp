@@ -6,6 +6,7 @@ import (
 	"github.com/dgrijalva/jwt-go/request"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -32,8 +33,13 @@ func CreateToken(id string) string {
 	return tokenString
 }
 
-func ParseToken(token string) (string, error) {
-	parsedToken, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
+func ParseToken(authHeader string) (string, error) {
+	// split ["Bearer", <token>"]
+	bearerToken := strings.Split(authHeader, " ")
+	// get the <token>
+	tokenVal := bearerToken[len(bearerToken)-1]
+
+	parsedToken, err := jwt.Parse(tokenVal, func(token *jwt.Token) (interface{}, error) {
 		// Don't forget to validate the alg is what you expect:
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])

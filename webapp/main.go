@@ -6,7 +6,6 @@ import (
 	"github.com/google/uuid"
 	"log"
 	"net/http"
-	"strings"
 	"time"
 )
 
@@ -36,12 +35,8 @@ func SetupRouter() *gin.Engine {
 func GetUserSelf(c *gin.Context) {
 	// get Authorization header "Bearer <token>"
 	authHeader := c.Request.Header.Get("Authorization")
-	// split ["Bearer", <token>"]
-	bearerToken := strings.Split(authHeader, " ")
-	// get the <token>
-	token := bearerToken[len(bearerToken)-1]
 
-	id, err := ParseToken(token)
+	id, err := ParseToken(authHeader)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, "")
 	}
