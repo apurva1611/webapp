@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="eb9dd4e7-7787-4280-b077-c9511760a91f" name="Default Changelist" comment="User schema with json values">
+      <change beforePath="$PROJECT_DIR$/user.go" beforeDir="false" afterPath="$PROJECT_DIR$/user.go" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Go File" />
+      </list>
+    </option>
+  </component>
+  <component name="GOROOT" path="/usr/local/go" />
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="GoLibraries">
+    <option name="indexEntireGoPath" value="false" />
+  </component>
+  <component name="ProjectId" id="1iXNNdWdT0j3w7MG2mLK3gBYWA1" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="DefaultGoTemplateProperty" value="Go File" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="go.import.settings.migrated" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.path.for.package.tslint" value="project" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
+    <property name="settings.editor.selected.configurable" value="copyright.filetypes.PLAIN_TEXT" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Go Build.go build webapp">
+    <configuration name="go build webapp" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
+      <module name="webapp" />
+      <working_directory value="$PROJECT_DIR$" />
+      <go_parameters value="-i" />
+      <kind value="PACKAGE" />
+      <filePath value="$PROJECT_DIR$" />
+      <package value="webapp" />
+      <directory value="$PROJECT_DIR$" />
+      <method v="2" />
+    </configuration>
+    <configuration name="TestCreateUser in webapp" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="webapp" />
+      <working_directory value="$PROJECT_DIR$" />
+      <framework value="gotest" />
+      <kind value="PACKAGE" />
+      <package value="webapp" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <pattern value="^\QTestCreateUser\E$" />
+      <method v="2" />
+    </configuration>
+    <configuration name="TestCreateUserFail in webapp" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="webapp" />
+      <working_directory value="$PROJECT_DIR$" />
+      <framework value="gotest" />
+      <kind value="PACKAGE" />
+      <package value="webapp" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <pattern value="^\QTestCreateUserFail\E$" />
+      <method v="2" />
+    </configuration>
+    <configuration name="TestCreateUserSuccess in webapp" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="webapp" />
+      <working_directory value="$PROJECT_DIR$" />
+      <framework value="gotest" />
+      <kind value="PACKAGE" />
+      <package value="webapp" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <pattern value="^\QTestCreateUserSuccess\E$" />
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Go Build.go build webapp" />
+      <item itemvalue="Go Test.TestCreateUser in webapp" />
+      <item itemvalue="Go Test.TestCreateUserFail in webapp" />
+      <item itemvalue="Go Test.TestCreateUserSuccess in webapp" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Go Build.go build webapp" />
+        <item itemvalue="Go Test.TestCreateUserSuccess in webapp" />
+        <item itemvalue="Go Test.TestCreateUserFail in webapp" />
+        <item itemvalue="Go Test.TestCreateUser in webapp" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
+    <MESSAGE value="gitignore .idea file is added" />
+    <MESSAGE value="User schema with json values" />
+    <option name="LAST_COMMIT_MESSAGE" value="User schema with json values" />
+    <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
+    <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
+    <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
+  </component>
+  <component name="VgoProject">
+    <integration-enabled>true</integration-enabled>
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="744" y="382" width="1071" height="788" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1602050138736">
+      <screen x="0" y="0" width="2560" height="1440" />
+    </state>
+    <state x="744" y="382" width="1071" height="788" key="#com.intellij.execution.impl.EditConfigurationsDialog/-1680.0.1680.1050/0.0.2560.1440@0.0.2560.1440" timestamp="1602050138736" />
+    <state x="100" y="100" width="2360" height="1240" key="#com.intellij.execution.junit2.states.ComparisonFailureState$DiffDialog" timestamp="1602052718690">
+      <screen x="0" y="23" width="2560" height="1369" />
+    </state>
+    <state x="100" y="100" width="2360" height="1240" key="#com.intellij.execution.junit2.states.ComparisonFailureState$DiffDialog/-1680.23.1680.1027/0.23.2560.1369@0.23.2560.1369" timestamp="1602052718690" />
+    <state x="753" y="304" key="CommitChangelistDialog2" timestamp="1602055564191">
+      <screen x="0" y="0" width="2560" height="1440" />
+    </state>
+    <state x="753" y="304" key="CommitChangelistDialog2/-1680.0.1680.1050/0.0.2560.1440@0.0.2560.1440" timestamp="1602055564191" />
+    <state width="2518" height="424" key="GridCell.Tab.0.bottom" timestamp="1602057067166">
+      <screen x="0" y="0" width="2560" height="1440" />
+    </state>
+    <state width="2518" height="424" key="GridCell.Tab.0.bottom/-1680.0.1680.1050/0.0.2560.1440@0.0.2560.1440" timestamp="1602057067166" />
+    <state width="2518" height="424" key="GridCell.Tab.0.bottom/-1680.23.1680.1027/0.0.2560.1440@0.0.2560.1440" timestamp="1602052989231" />
+    <state width="2518" height="424" key="GridCell.Tab.0.bottom/-1680.23.1680.1027/0.23.2560.1369@0.23.2560.1369" timestamp="1602053898906" />
+    <state width="2518" height="424" key="GridCell.Tab.0.center" timestamp="1602057067164">
+      <screen x="0" y="0" width="2560" height="1440" />
+    </state>
+    <state width="2518" height="424" key="GridCell.Tab.0.center/-1680.0.1680.1050/0.0.2560.1440@0.0.2560.1440" timestamp="1602057067164" />
+    <state width="2518" height="424" key="GridCell.Tab.0.center/-1680.23.1680.1027/0.0.2560.1440@0.0.2560.1440" timestamp="1602052989230" />
+    <state width="2518" height="424" key="GridCell.Tab.0.center/-1680.23.1680.1027/0.23.2560.1369@0.23.2560.1369" timestamp="1602053898905" />
+    <state width="2518" height="424" key="GridCell.Tab.0.left" timestamp="1602057067163">
+      <screen x="0" y="0" width="2560" height="1440" />
+    </state>
+    <state width="2518" height="424" key="GridCell.Tab.0.left/-1680.0.1680.1050/0.0.2560.1440@0.0.2560.1440" timestamp="1602057067163" />
+    <state width="2518" height="424" key="GridCell.Tab.0.left/-1680.23.1680.1027/0.0.2560.1440@0.0.2560.1440" timestamp="1602052989229" />
+    <state width="2518" height="424" key="GridCell.Tab.0.left/-1680.23.1680.1027/0.23.2560.1369@0.23.2560.1369" timestamp="1602053898904" />
+    <state width="2518" height="424" key="GridCell.Tab.0.right" timestamp="1602057067165">
+      <screen x="0" y="0" width="2560" height="1440" />
+    </state>
+    <state width="2518" height="424" key="GridCell.Tab.0.right/-1680.0.1680.1050/0.0.2560.1440@0.0.2560.1440" timestamp="1602057067165" />
+    <state width="2518" height="424" key="GridCell.Tab.0.right/-1680.23.1680.1027/0.0.2560.1440@0.0.2560.1440" timestamp="1602052989231" />
+    <state width="2518" height="424" key="GridCell.Tab.0.right/-1680.23.1680.1027/0.23.2560.1369@0.23.2560.1369" timestamp="1602053898905" />
+    <state width="2518" height="520" key="GridCell.Tab.1.bottom" timestamp="1602052593201">
+      <screen x="0" y="0" width="2560" height="1440" />
+    </state>
+    <state width="2518" height="520" key="GridCell.Tab.1.bottom/-1680.0.1680.1050/0.0.2560.1440@0.0.2560.1440" timestamp="1602052593201" />
+    <state width="2518" height="520" key="GridCell.Tab.1.center" timestamp="1602052593200">
+      <screen x="0" y="0" width="2560" height="1440" />
+    </state>
+    <state width="2518" height="520" key="GridCell.Tab.1.center/-1680.0.1680.1050/0.0.2560.1440@0.0.2560.1440" timestamp="1602052593200" />
+    <state width="2518" height="520" key="GridCell.Tab.1.left" timestamp="1602052593200">
+      <screen x="0" y="0" width="2560" height="1440" />
+    </state>
+    <state width="2518" height="520" key="GridCell.Tab.1.left/-1680.0.1680.1050/0.0.2560.1440@0.0.2560.1440" timestamp="1602052593200" />
+    <state width="2518" height="520" key="GridCell.Tab.1.right" timestamp="1602052593201">
+      <screen x="0" y="0" width="2560" height="1440" />
+    </state>
+    <state width="2518" height="520" key="GridCell.Tab.1.right/-1680.0.1680.1050/0.0.2560.1440@0.0.2560.1440" timestamp="1602052593201" />
+    <state x="880" y="460" key="Vcs.Push.Dialog.v2" timestamp="1602050622479">
+      <screen x="0" y="0" width="2560" height="1440" />
+    </state>
+    <state x="880" y="460" key="Vcs.Push.Dialog.v2/-1680.0.1680.1050/0.0.2560.1440@0.0.2560.1440" timestamp="1602050622479" />
+    <state x="945" y="331" width="670" height="676" key="search.everywhere.popup" timestamp="1602051206191">
+      <screen x="0" y="0" width="2560" height="1440" />
+    </state>
+    <state x="945" y="331" width="670" height="676" key="search.everywhere.popup/-1680.0.1680.1050/0.0.2560.1440@0.0.2560.1440" timestamp="1602051206191" />
+  </component>
+</project>
