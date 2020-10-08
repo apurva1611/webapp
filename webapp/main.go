@@ -1,9 +1,9 @@
 package main
 
 import (
-	_"github.com/go-sql-driver/mysql"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/google/uuid"
 	"log"
 	"net/http"
@@ -40,7 +40,7 @@ func GetUserSelf(c *gin.Context) {
 
 	id, err := ParseToken(authHeader)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, "")
+		c.JSON(http.StatusInternalServerError, "500, Internal server error")
 	}
 
 	log.Print(id)
@@ -54,7 +54,7 @@ func UpdateUserSelf(c *gin.Context) {
 
 	id, err := ParseToken(authHeader)
 	if err != nil {
-		c.JSON(http.StatusNoContent, "")
+		c.JSON(http.StatusNoContent, "204, No content")
 		return
 	}
 
@@ -65,7 +65,7 @@ func UpdateUserSelf(c *gin.Context) {
 	if c.ShouldBindJSON(&updatedUser) == nil {
 		// these values cannot be updated by the user
 		if updatedUser.AccountCreated != "" || updatedUser.AccountUpdated != "" || updatedUser.ID != "" {
-			c.JSON(http.StatusBadRequest, "")
+			c.JSON(http.StatusBadRequest, "400 Bad request")
 		}
 
 		// TODO put the updatedUser to the database
@@ -79,13 +79,13 @@ func CreateUser(c *gin.Context) {
 
 		// if username is not a valid email respond 400
 		if !IsEmailValid(user.Username) {
-			c.String(http.StatusBadRequest, "")
+			c.String(http.StatusBadRequest, "400 Bad request")
 			return
 		}
 
 		// if password is not a valid password respond 400
 		if !IsPasswordValid(user.Password) {
-			c.String(http.StatusBadRequest, "")
+			c.String(http.StatusBadRequest, "400 Bad request")
 			return
 		}
 
@@ -114,7 +114,7 @@ func CreateUser(c *gin.Context) {
 
 		c.JSON(http.StatusOK, gin.H{"user": resp, "token": token})
 	} else {
-		c.JSON(http.StatusBadRequest, "")
+		c.JSON(http.StatusBadRequest, "400 Bad request")
 	}
 }
 
@@ -130,5 +130,5 @@ func GetUserWithId(c *gin.Context) {
 
 	// TODO query id on database
 
-	c.JSON(http.StatusOK, "")
+	c.JSON(http.StatusOK, "200 Ok")
 }
