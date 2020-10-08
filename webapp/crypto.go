@@ -13,8 +13,8 @@ func BcryptAndSalt(password string) string {
 	return string(hash)
 }
 
-func VerifyPassword(password string, hash string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(password), []byte(hash))
+func VerifyPassword(hash string, password string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	if err != nil {
 		return false
 	}
