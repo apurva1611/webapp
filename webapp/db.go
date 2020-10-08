@@ -3,16 +3,17 @@ package main
 import (
 	"context"
 	"database/sql"
-"fmt"
+	"fmt"
 	"log"
 	"reflect"
 	"time"
 
-	_"github.com/go-sql-driver/mysql"
+	_ "github.com/go-sql-driver/mysql"
 )
 
 var db *sql.DB
 var err error
+
 const (
 	username = "root"
 	password = "pass1234"
@@ -68,7 +69,7 @@ func createDb() {
 	log.Printf("Connected to DB %s successfully\n", dbname)
 }
 
-func createTable(){
+func createTable() {
 	_, err = db.Exec("DROP TABLE IF EXISTS mysql.users")
 	if err != nil {
 		panic(err)
