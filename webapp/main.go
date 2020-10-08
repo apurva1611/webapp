@@ -79,13 +79,13 @@ func CreateUser(c *gin.Context) {
 
 		// if username is not a valid email respond 400
 		if !IsEmailValid(user.Username) {
-			c.String(http.StatusBadRequest, "400 Bad request")
+			c.JSON(http.StatusBadRequest, "400 Bad request")
 			return
 		}
 
 		// if password is not a valid password respond 400
 		if !IsPasswordValid(user.Password) {
-			c.String(http.StatusBadRequest, "400 Bad request")
+			c.JSON(http.StatusBadRequest, "400 Bad request")
 			return
 		}
 
