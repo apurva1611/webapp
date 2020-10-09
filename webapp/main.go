@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/google/uuid"
 	"log"
 	"net/http"
@@ -12,6 +11,7 @@ import (
 
 func main() {
 	createDb()
+	createTable()
 	router := SetupRouter()
 	log.Fatal(router.Run(":8080"))
 }
@@ -104,6 +104,9 @@ func CreateUser(c *gin.Context) {
 		user.AccountUpdated = user.AccountCreated
 
 		// TODO: add user to the database
+		if !insertUser(user) {
+			c.JSON(http.StatusBadRequest, "")
+		}
 
 		// remove the password from response
 		resp := user
@@ -128,7 +131,15 @@ func GetUserWithId(c *gin.Context) {
 		return
 	}
 
-	// TODO query id on database
+	// prevent calling other handlers AuthMW and GetUserSelf
+	c.Abort()
 
-	c.JSON(http.StatusOK, "200 Ok")
+	user := queryById(id)
+
+	if user == nil {
+		c.JSON(http.StatusNotFound, "User with id: "+id+" does not exist")
+		return
+	}
+
+	c.JSON(http.StatusOK, *user)
 }
