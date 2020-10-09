@@ -39,8 +39,8 @@ func closeDB() {
 func createDb() {
 	openDB()
 
-	ctx, cancelfunc := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancelfunc()
+	ctx, cancelFunc := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancelFunc()
 
 	res, err := db.ExecContext(ctx, "CREATE DATABASE IF NOT EXISTS "+dbname)
 	if err != nil {
@@ -59,7 +59,8 @@ func createDb() {
 	db.SetMaxIdleConns(20)
 	db.SetConnMaxLifetime(time.Minute * 5)
 
-	ctx, cancelfunc = context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancelFunc = context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancelFunc()
 
 	err = db.PingContext(ctx)
 	if err != nil {
