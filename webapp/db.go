@@ -125,3 +125,16 @@ func createTable() {
 		}
 	}
 }
+
+func queryById(id string) *User {
+	user := User{}
+	err := db.QueryRow(`SELECT id, firstname, lastname, username, created, modified 
+							FROM webappdb.users WHERE id = ?`, id).Scan(&user.ID, &user.FirstName, &user.LastName, &user.Username,
+		&user.AccountCreated, &user.AccountUpdated)
+	if err != nil {
+		log.Printf(err.Error())
+		return nil
+	}
+
+	return &user
+}
