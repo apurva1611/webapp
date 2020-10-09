@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
-	"reflect"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -87,42 +86,6 @@ func createTable() {
 		PRIMARY KEY (id))ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;`)
 	if err != nil {
 		panic(err)
-	}
-
-	rows, err := db.Query("SELECT * FROM webappdb.users")
-	if err != nil {
-		panic(err)
-	}
-
-	for rows.Next() {
-
-		// Get column names
-		columns, err := rows.Columns()
-		if err != nil {
-			panic(err.Error())
-		}
-
-		// Create interface set
-		values := make([]interface{}, len(columns))
-		scanArgs := make([]interface{}, len(values))
-		for i := range values {
-			scanArgs[i] = &values[i]
-		}
-
-		// Scan for arbitrary values
-		err = rows.Scan(scanArgs...)
-		if err == nil {
-
-			// Print data
-			for i, value := range values {
-				switch value.(type) {
-				default:
-					fmt.Printf("%s :: %s :: %+v\n", columns[i], reflect.TypeOf(value), value)
-				}
-			}
-		} else {
-			panic(err)
-		}
 	}
 }
 
