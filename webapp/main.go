@@ -103,9 +103,9 @@ func CreateUser(c *gin.Context) {
 		user.AccountCreated = currentTime.Format("2006-01-02 03:04:05")
 		user.AccountUpdated = user.AccountCreated
 
-		// TODO: add user to the database
 		if !insertUser(user) {
-			c.JSON(http.StatusBadRequest, "")
+			c.JSON(http.StatusBadRequest, "400 Bad request")
+			return
 		}
 
 		// remove the password from response
