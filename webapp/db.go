@@ -98,6 +98,19 @@ func queryById(id string) *User {
 	return &user
 }
 
+func queryByUsername(username string) *User {
+	user := User{}
+	err := db.QueryRow(`SELECT id, firstname, lastname, username, created, modified 
+							FROM webappdb.users WHERE username = ?`, username).Scan(&user.ID, &user.FirstName, &user.LastName, &user.Username,
+		&user.AccountCreated, &user.AccountUpdated)
+	if err != nil {
+		log.Printf(err.Error())
+		return nil
+	}
+
+	return &user
+}
+
 func insertUser(user User) bool {
 	insert, err := db.Prepare(`INSERT INTO webappdb.users(id, firstname, lastname, username, password, created, modified) 
 						VALUES (?, ?, ?, ?, ?, ?, ?)`)
