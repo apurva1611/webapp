@@ -138,3 +138,21 @@ func queryById(id string) *User {
 
 	return &user
 }
+
+func insertUser(user User) bool {
+	insert, err := db.Prepare(`INSERT INTO webappdb.users(id, firstname, lastname, username, password, created, modified) 
+						VALUES (?, ?, ?, ?, ?, ?, ?)`)
+
+	if err != nil {
+		log.Printf(err.Error())
+		return false
+	}
+
+	_, err = insert.Exec(user.ID, user.FirstName, user.LastName, user.Username, user.Password, user.AccountCreated, user.AccountUpdated)
+	if err != nil {
+		log.Printf(err.Error())
+		return false
+	}
+
+	return true
+}
