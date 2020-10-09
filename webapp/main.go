@@ -44,10 +44,14 @@ func GetUserSelf(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, "500, Internal server error")
 	}
 
-	log.Print(id)
-	// TODO: query id on database
+	user := queryById(id)
 
-	c.JSON(http.StatusOK, gin.H{"id": id})
+	if user == nil {
+		c.JSON(http.StatusNotFound, "User self not found")
+		return
+	}
+
+	c.JSON(http.StatusOK, *user)
 }
 
 func UpdateUserSelf(c *gin.Context) {
@@ -124,7 +128,6 @@ func CreateUser(c *gin.Context) {
 
 func GetUserWithId(c *gin.Context) {
 	id := c.Param("id")
-	print(id)
 
 	// if v1/user/self is called, skip this function and move to auth middleware
 	if id == "self" {
