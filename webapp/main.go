@@ -80,7 +80,11 @@ func UpdateUserSelf(c *gin.Context) {
 func CreateUser(c *gin.Context) {
 	user := User{}
 	if c.ShouldBindJSON(&user) == nil {
-		// TODO: check if username already exists
+		qUser := queryByUsername(user.Username)
+		if qUser != nil {
+			c.JSON(http.StatusBadRequest, "Username (email address) already exists")
+			return
+		}
 
 		// if username is not a valid email respond 400
 		if !IsEmailValid(user.Username) {
@@ -103,9 +107,8 @@ func CreateUser(c *gin.Context) {
 		user.Password = string(hash)
 
 		// get current time in UTC
-		currentTime := time.Now().UTC()
 		// format the time and assign the value to the fields
-		user.AccountCreated = currentTime.Format("2006-01-02 03:04:05")
+		user.AccountCreated = time.Now().UTC().Format("2006-01-02 03:04:05")
 		user.AccountUpdated = user.AccountCreated
 
 		if !insertUser(user) {
