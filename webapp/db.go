@@ -128,3 +128,21 @@ func insertUser(user User) bool {
 
 	return true
 }
+
+func updateUser(user User) bool {
+	update, err := db.Prepare(`UPDATE webappdb.users SET firstname=?, lastname=?, username=?, password=?, modified=? 
+										WHERE id=?`)
+
+	if err != nil {
+		log.Printf(err.Error())
+		return false
+	}
+
+	_, err = update.Exec(user.FirstName, user.LastName, user.Username, user.Password, user.AccountUpdated, user.ID)
+	if err != nil {
+		log.Printf(err.Error())
+		return false
+	}
+
+	return true
+}
