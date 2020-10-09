@@ -12,34 +12,43 @@ import (
 )
 
 var db *sql.DB
-var err error
 
 const (
 	username = "root"
 	password = "pass1234"
-	hostname = "127.0.0.1:3306"
+	hostname = "0.0.0.0:3306"
 	dbname   = "webappdb"
 )
 
-func dsn(dbName string) string {
-	return fmt.Sprintf("%s:%s@tcp(%s)/%s", username, password, hostname, dbName)
+func dsn() string {
+	return fmt.Sprintf("%s:%s@tcp(%s)/%s", username, password, hostname, dbname)
+}
+
+func openDB() {
+	var err error
+	db, err = sql.Open("mysql", dsn())
+	if err != nil {
+		log.Printf("Error %s when opening DB\n", err)
+		panic(err)
+	}
+}
+
+func closeDB() {
+	db.Close()
 }
 
 func createDb() {
-	db, err := sql.Open("mysql", dsn(""))
-	if err != nil {
-		log.Printf("Error %s when opening DB\n", err)
-		return
-	}
-	defer db.Close()
+	openDB()
 
 	ctx, cancelfunc := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancelfunc()
+
 	res, err := db.ExecContext(ctx, "CREATE DATABASE IF NOT EXISTS "+dbname)
 	if err != nil {
 		log.Printf("Error %s when creating DB\n", err)
 		return
 	}
+
 	no, err := res.RowsAffected()
 	if err != nil {
 		log.Printf("Error %s when fetching rows", err)
@@ -47,20 +56,12 @@ func createDb() {
 	}
 	log.Printf("rows affected %d\n", no)
 
-	db.Close()
-	db, err = sql.Open("mysql", dsn(dbname))
-	if err != nil {
-		log.Printf("Error %s when opening DB", err)
-		return
-	}
-	defer db.Close()
-
 	db.SetMaxOpenConns(20)
 	db.SetMaxIdleConns(20)
 	db.SetConnMaxLifetime(time.Minute * 5)
 
 	ctx, cancelfunc = context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancelfunc()
+
 	err = db.PingContext(ctx)
 	if err != nil {
 		log.Printf("Errors %s pinging DB", err)
@@ -70,16 +71,16 @@ func createDb() {
 }
 
 func createTable() {
-	_, err = db.Exec("DROP TABLE IF EXISTS mysql.users")
+	_, err := db.Exec("DROP TABLE IF EXISTS webappdb.users")
 	if err != nil {
 		panic(err)
 	}
 
-	_, err = db.Exec(`CREATE TABLE mydb.users(
+	_, err = db.Exec(`CREATE TABLE webappdb.users(
 		id varchar(100) NOT NULL,
 		firstname varchar(100) COLLATE utf8_unicode_ci NOT NULL,
 		lastname varchar(100) COLLATE utf8_unicode_ci NOT NULL,
-		email varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+		username varchar(100) COLLATE utf8_unicode_ci NOT NULL,
 		password varchar(255) COLLATE utf8_unicode_ci NOT NULL,
 		created datetime NOT NULL,
 		modified datetime NOT NULL,
@@ -88,13 +89,7 @@ func createTable() {
 		panic(err)
 	}
 
-	// need to add argument
-	_, err = db.Exec("INSERT INTO mysql.users (string_value, string_value, string_value, string_value, string_value, datetime_value, datetime_value ) VALUES (?, ?, ?, ?, ?, ?, ?)", "")
-	if err != nil {
-		panic(err)
-	}
-
-	rows, err := db.Query("SELECT * FROM mysql.users")
+	rows, err := db.Query("SELECT * FROM webappdb.users")
 	if err != nil {
 		panic(err)
 	}
