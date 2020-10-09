@@ -17,3 +17,8 @@
 webapp/.idea/**/workspace.xml
 
 .DS_Store
+
+bin/
+pkg/
+src/
+*webapp
