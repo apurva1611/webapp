@@ -5,12 +5,12 @@ ENV GO111MODULE=on
 
 WORKDIR /app
 
-COPY go.mod .
-COPY go.sum .
+COPY webapp/go.mod .
+COPY webapp/go.sum .
 
 RUN go mod download
 
-COPY . .
+COPY webapp/ .
 
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build
 
