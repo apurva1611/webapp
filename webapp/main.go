@@ -63,8 +63,11 @@ func UpdateUserSelf(c *gin.Context) {
 		return
 	}
 
-	log.Print(id)
-	// TODO: query id on database
+	qUser := queryById(id)
+	if qUser == nil {
+		c.JSON(http.StatusNotFound, "User self not found")
+		return
+	}
 
 	updatedUser := User{}
 	if c.ShouldBindJSON(&updatedUser) == nil {
@@ -73,7 +76,19 @@ func UpdateUserSelf(c *gin.Context) {
 			c.JSON(http.StatusBadRequest, "400 Bad request")
 		}
 
-		// TODO put the updatedUser to the database
+		updatedUser.ID = qUser.ID
+		updatedUser.Password = BcryptAndSalt(updatedUser.Password)
+		updatedUser.AccountCreated = qUser.AccountCreated
+		updatedUser.AccountUpdated = time.Now().UTC().Format("2006-01-02 03:04:05")
+
+		if !updateUser(updatedUser) {
+			c.JSON(http.StatusBadRequest, "400 Bad request")
+			return
+		}
+
+		c.JSON(http.StatusOK, "Self updated successfully")
+	} else {
+		c.JSON(http.StatusBadRequest, "400 Bad request")
 	}
 }
 
