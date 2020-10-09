@@ -79,7 +79,7 @@ func createTable() {
 		password varchar(255) COLLATE utf8_unicode_ci NOT NULL,
 		created datetime NOT NULL,
 		modified datetime NOT NULL,
-		PRIMARY KEY (id))ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;`)
+		PRIMARY KEY (id, username))ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;`)
 	if err != nil {
 		panic(err)
 	}
@@ -130,7 +130,7 @@ func insertUser(user User) bool {
 }
 
 func updateUser(user User) bool {
-	update, err := db.Prepare(`UPDATE webappdb.users SET firstname=?, lastname=?, username=?, password=?, modified=? 
+	update, err := db.Prepare(`UPDATE webappdb.users SET firstname=?, lastname=?, password=?, modified=? 
 										WHERE id=?`)
 
 	if err != nil {
@@ -138,7 +138,7 @@ func updateUser(user User) bool {
 		return false
 	}
 
-	_, err = update.Exec(user.FirstName, user.LastName, user.Username, user.Password, user.AccountUpdated, user.ID)
+	_, err = update.Exec(user.FirstName, user.LastName, user.Password, user.AccountUpdated, user.ID)
 	if err != nil {
 		log.Printf(err.Error())
 		return false

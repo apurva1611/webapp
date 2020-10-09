@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 func main() {
@@ -56,7 +57,7 @@ func GetUserSelf(c *gin.Context) {
 
 func UpdateUserSelf(c *gin.Context) {
 	authHeader := c.Request.Header.Get("Authorization")
-
+	fmt.Printf(authHeader)
 	id, err := ParseToken(authHeader)
 	if err != nil {
 		c.JSON(http.StatusNoContent, "204, No content")
@@ -94,6 +95,7 @@ func UpdateUserSelf(c *gin.Context) {
 
 func CreateUser(c *gin.Context) {
 	user := User{}
+
 	if c.ShouldBindJSON(&user) == nil {
 		// if username is not a valid email respond 400
 		if !IsEmailValid(user.Username) {
