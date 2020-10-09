@@ -75,7 +75,7 @@ func createTable() {
 		id varchar(100) NOT NULL,
 		firstname varchar(100) COLLATE utf8_unicode_ci NOT NULL,
 		lastname varchar(100) COLLATE utf8_unicode_ci NOT NULL,
-		username varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+		username varchar(100) COLLATE utf8_unicode_ci NOT NULL UNIQUE,
 		password varchar(255) COLLATE utf8_unicode_ci NOT NULL,
 		created datetime NOT NULL,
 		modified datetime NOT NULL,

@@ -95,12 +95,6 @@ func UpdateUserSelf(c *gin.Context) {
 func CreateUser(c *gin.Context) {
 	user := User{}
 	if c.ShouldBindJSON(&user) == nil {
-		qUser := queryByUsername(user.Username)
-		if qUser != nil {
-			c.JSON(http.StatusBadRequest, "Username (email address) already exists")
-			return
-		}
-
 		// if username is not a valid email respond 400
 		if !IsEmailValid(user.Username) {
 			c.JSON(http.StatusBadRequest, "400 Bad request")
@@ -127,7 +121,7 @@ func CreateUser(c *gin.Context) {
 		user.AccountUpdated = user.AccountCreated
 
 		if !insertUser(user) {
-			c.JSON(http.StatusBadRequest, "400 Bad request")
+			c.JSON(http.StatusBadRequest, "here400 Bad request")
 			return
 		}
 
