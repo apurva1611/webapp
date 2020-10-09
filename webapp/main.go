@@ -12,6 +12,7 @@ import (
 func main() {
 	createDb()
 	createTable()
+	defer closeDB()
 	router := SetupRouter()
 	log.Fatal(router.Run(":8080"))
 }
