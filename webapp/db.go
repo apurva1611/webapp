@@ -71,12 +71,7 @@ func createDb() {
 }
 
 func createTable() {
-	_, err := db.Exec("DROP TABLE IF EXISTS webappdb.users")
-	if err != nil {
-		panic(err)
-	}
-
-	_, err = db.Exec(`CREATE TABLE webappdb.users(
+	_, err := db.Exec(`CREATE TABLE IF NOT EXISTS webappdb.users(
 		id varchar(100) NOT NULL,
 		firstname varchar(100) COLLATE utf8_unicode_ci NOT NULL,
 		lastname varchar(100) COLLATE utf8_unicode_ci NOT NULL,
