@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/google/uuid"
 	"log"
 	"net/http"
@@ -12,6 +11,8 @@ import (
 
 func main() {
 	createDb()
+	createTable()
+	defer closeDB()
 	router := SetupRouter()
 	log.Fatal(router.Run(":8080"))
 }
@@ -20,7 +21,7 @@ func SetupRouter() *gin.Engine {
 	router := gin.Default()
 
 	v1 := router.Group("/v1")
-	authorized := v1.Group("/user/self/")
+	authorized := v1.Group("/user/self")
 	authorized.Use(AuthMW(secret))
 	{
 		authorized.PUT("", UpdateUserSelf)
@@ -43,10 +44,14 @@ func GetUserSelf(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, "500, Internal server error")
 	}
 
-	log.Print(id)
-	// TODO: query id on database
+	user := queryById(id)
 
-	c.JSON(http.StatusOK, gin.H{"id": id})
+	if user == nil {
+		c.JSON(http.StatusNotFound, "User self not found")
+		return
+	}
+
+	c.JSON(http.StatusOK, *user)
 }
 
 func UpdateUserSelf(c *gin.Context) {
@@ -58,8 +63,11 @@ func UpdateUserSelf(c *gin.Context) {
 		return
 	}
 
-	log.Print(id)
-	// TODO: query id on database
+	qUser := queryById(id)
+	if qUser == nil {
+		c.JSON(http.StatusNotFound, "User self not found")
+		return
+	}
 
 	updatedUser := User{}
 	if c.ShouldBindJSON(&updatedUser) == nil {
@@ -68,15 +76,25 @@ func UpdateUserSelf(c *gin.Context) {
 			c.JSON(http.StatusBadRequest, "400 Bad request")
 		}
 
-		// TODO put the updatedUser to the database
+		updatedUser.ID = qUser.ID
+		updatedUser.Password = BcryptAndSalt(updatedUser.Password)
+		updatedUser.AccountCreated = qUser.AccountCreated
+		updatedUser.AccountUpdated = time.Now().UTC().Format("2006-01-02 03:04:05")
+
+		if !updateUser(updatedUser) {
+			c.JSON(http.StatusBadRequest, "400 Bad request")
+			return
+		}
+
+		c.JSON(http.StatusOK, "Self updated successfully")
+	} else {
+		c.JSON(http.StatusBadRequest, "400 Bad request")
 	}
 }
 
 func CreateUser(c *gin.Context) {
 	user := User{}
 	if c.ShouldBindJSON(&user) == nil {
-		// TODO: check if username already exists
-
 		// if username is not a valid email respond 400
 		if !IsEmailValid(user.Username) {
 			c.JSON(http.StatusBadRequest, "400 Bad request")
@@ -98,12 +116,14 @@ func CreateUser(c *gin.Context) {
 		user.Password = string(hash)
 
 		// get current time in UTC
-		currentTime := time.Now().UTC()
 		// format the time and assign the value to the fields
-		user.AccountCreated = currentTime.Format("2006-01-02 03:04:05")
+		user.AccountCreated = time.Now().UTC().Format("2006-01-02 03:04:05")
 		user.AccountUpdated = user.AccountCreated
 
-		// TODO: add user to the database
+		if !insertUser(user) {
+			c.JSON(http.StatusBadRequest, "here400 Bad request")
+			return
+		}
 
 		// remove the password from response
 		resp := user
@@ -120,7 +140,6 @@ func CreateUser(c *gin.Context) {
 
 func GetUserWithId(c *gin.Context) {
 	id := c.Param("id")
-	print(id)
 
 	// if v1/user/self is called, skip this function and move to auth middleware
 	if id == "self" {
@@ -128,7 +147,15 @@ func GetUserWithId(c *gin.Context) {
 		return
 	}
 
-	// TODO query id on database
+	// prevent calling other handlers AuthMW and GetUserSelf
+	c.Abort()
 
-	c.JSON(http.StatusOK, "200 Ok")
+	user := queryById(id)
+
+	if user == nil {
+		c.JSON(http.StatusNotFound, "User with id: "+id+" does not exist")
+		return
+	}
+
+	c.JSON(http.StatusOK, *user)
 }

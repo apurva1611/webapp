@@ -5,41 +5,49 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
-	"reflect"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 )
 
 var db *sql.DB
-var err error
 
 const (
 	username = "root"
 	password = "pass1234"
-	hostname = "127.0.0.1:3306"
+	hostname = "0.0.0.0:3306"
 	dbname   = "webappdb"
 )
 
-func dsn(dbName string) string {
-	return fmt.Sprintf("%s:%s@tcp(%s)/%s", username, password, hostname, dbName)
+func dsn() string {
+	return fmt.Sprintf("%s:%s@tcp(%s)/%s", username, password, hostname, dbname)
+}
+
+func openDB() {
+	var err error
+	db, err = sql.Open("mysql", dsn())
+	if err != nil {
+		log.Printf("Error %s when opening DB\n", err)
+		panic(err)
+	}
+}
+
+func closeDB() {
+	db.Close()
 }
 
 func createDb() {
-	db, err := sql.Open("mysql", dsn(""))
-	if err != nil {
-		log.Printf("Error %s when opening DB\n", err)
-		return
-	}
-	defer db.Close()
+	openDB()
 
-	ctx, cancelfunc := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancelfunc()
+	ctx, cancelFunc := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancelFunc()
+
 	res, err := db.ExecContext(ctx, "CREATE DATABASE IF NOT EXISTS "+dbname)
 	if err != nil {
 		log.Printf("Error %s when creating DB\n", err)
 		return
 	}
+
 	no, err := res.RowsAffected()
 	if err != nil {
 		log.Printf("Error %s when fetching rows", err)
@@ -47,20 +55,13 @@ func createDb() {
 	}
 	log.Printf("rows affected %d\n", no)
 
-	db.Close()
-	db, err = sql.Open("mysql", dsn(dbname))
-	if err != nil {
-		log.Printf("Error %s when opening DB", err)
-		return
-	}
-	defer db.Close()
-
 	db.SetMaxOpenConns(20)
 	db.SetMaxIdleConns(20)
 	db.SetConnMaxLifetime(time.Minute * 5)
 
-	ctx, cancelfunc = context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancelfunc()
+	ctx, cancelFunc = context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancelFunc()
+
 	err = db.PingContext(ctx)
 	if err != nil {
 		log.Printf("Errors %s pinging DB", err)
@@ -70,16 +71,11 @@ func createDb() {
 }
 
 func createTable() {
-	_, err = db.Exec("DROP TABLE IF EXISTS mysql.users")
-	if err != nil {
-		panic(err)
-	}
-
-	_, err = db.Exec(`CREATE TABLE mydb.users(
+	_, err := db.Exec(`CREATE TABLE IF NOT EXISTS webappdb.users(
 		id varchar(100) NOT NULL,
 		firstname varchar(100) COLLATE utf8_unicode_ci NOT NULL,
 		lastname varchar(100) COLLATE utf8_unicode_ci NOT NULL,
-		email varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+		username varchar(100) COLLATE utf8_unicode_ci NOT NULL UNIQUE,
 		password varchar(255) COLLATE utf8_unicode_ci NOT NULL,
 		created datetime NOT NULL,
 		modified datetime NOT NULL,
@@ -87,46 +83,66 @@ func createTable() {
 	if err != nil {
 		panic(err)
 	}
+}
 
-	// need to add argument
-	_, err = db.Exec("INSERT INTO mysql.users (string_value, string_value, string_value, string_value, string_value, datetime_value, datetime_value ) VALUES (?, ?, ?, ?, ?, ?, ?)", "")
+func queryById(id string) *User {
+	user := User{}
+	err := db.QueryRow(`SELECT id, firstname, lastname, username, created, modified 
+							FROM webappdb.users WHERE id = ?`, id).Scan(&user.ID, &user.FirstName, &user.LastName, &user.Username,
+		&user.AccountCreated, &user.AccountUpdated)
 	if err != nil {
-		panic(err)
+		log.Printf(err.Error())
+		return nil
 	}
 
-	rows, err := db.Query("SELECT * FROM mysql.users")
+	return &user
+}
+
+func queryByUsername(username string) *User {
+	user := User{}
+	err := db.QueryRow(`SELECT id, firstname, lastname, username, created, modified 
+							FROM webappdb.users WHERE username = ?`, username).Scan(&user.ID, &user.FirstName, &user.LastName, &user.Username,
+		&user.AccountCreated, &user.AccountUpdated)
 	if err != nil {
-		panic(err)
+		log.Printf(err.Error())
+		return nil
 	}
 
-	for rows.Next() {
+	return &user
+}
 
-		// Get column names
-		columns, err := rows.Columns()
-		if err != nil {
-			panic(err.Error())
-		}
+func insertUser(user User) bool {
+	insert, err := db.Prepare(`INSERT INTO webappdb.users(id, firstname, lastname, username, password, created, modified) 
+						VALUES (?, ?, ?, ?, ?, ?, ?)`)
 
-		// Create interface set
-		values := make([]interface{}, len(columns))
-		scanArgs := make([]interface{}, len(values))
-		for i := range values {
-			scanArgs[i] = &values[i]
-		}
-
-		// Scan for arbitrary values
-		err = rows.Scan(scanArgs...)
-		if err == nil {
-
-			// Print data
-			for i, value := range values {
-				switch value.(type) {
-				default:
-					fmt.Printf("%s :: %s :: %+v\n", columns[i], reflect.TypeOf(value), value)
-				}
-			}
-		} else {
-			panic(err)
-		}
+	if err != nil {
+		log.Printf(err.Error())
+		return false
 	}
+
+	_, err = insert.Exec(user.ID, user.FirstName, user.LastName, user.Username, user.Password, user.AccountCreated, user.AccountUpdated)
+	if err != nil {
+		log.Printf(err.Error())
+		return false
+	}
+
+	return true
+}
+
+func updateUser(user User) bool {
+	update, err := db.Prepare(`UPDATE webappdb.users SET firstname=?, lastname=?, username=?, password=?, modified=? 
+										WHERE id=?`)
+
+	if err != nil {
+		log.Printf(err.Error())
+		return false
+	}
+
+	_, err = update.Exec(user.FirstName, user.LastName, user.Username, user.Password, user.AccountUpdated, user.ID)
+	if err != nil {
+		log.Printf(err.Error())
+		return false
+	}
+
+	return true
 }
