@@ -1,9 +1,9 @@
-node {
+pipeline {
 
     def dockerImage
     def registryCredential = 'DockerHub'
     def commit_id
-
+    agent { dockerfile true }
 	stage('Clone repository') {
         /* Cloning the Repository to our Workspace */
         checkout scm
