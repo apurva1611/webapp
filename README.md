@@ -20,23 +20,23 @@ docker-compose down
 
 #### Example create a user:
 ```
-curl -X POST "http://localhost:8080/v1/user" -H  "accept: application/json" -H  "Content-Type: application/json" -d "{\"first_name\":\"Jane\",\"last_name\":\"Doe\",\"password\":\"1*Skdjfhskdfjhg\",\"username\":\"jane.doe@example.com\"}"
+curl -v -X POST "http://localhost:8080/v1/user" -H  "accept: application/json" -H  "Content-Type: application/json" -d "{\"first_name\":\"Jane\",\"last_name\":\"Doe\",\"password\":\"1*Skdjfhskdfjhg\",\"username\":\"jane.doe@example.com\"}"
 ```
 It returns Auth token and the created user.
 
 #### Example get self (\<token> is obtained from the previous POST):
 ```
-curl -X GET "http://localhost:8080/v1/user/self" -H "accept: application/json" -H  "Content-Type: application/json" -H "Authorization: Bearer <token>"
+curl -v -X GET "http://localhost:8080/v1/user/self" -H "accept: application/json" -H  "Content-Type: application/json" -H "Authorization: Bearer <token>"
 ```
 It returns current user's data.
 
 #### Example update self (\<token> is obtained from the previous POST): 
 ```
-curl -X PUT "http://localhost:8080/v1/user/self" -H "accept: application/json" -H  "Content-Type: application/json" -H "Authorization: Bearer <token>" -d "{\"first_name\":\"Boran\",\"last_name\":\"Yildirim\",\"password\":\"1*Skdjfhskdfjhg\",\"username\":\"jane.doe@example.com\"}"
+curl -v -X PUT "http://localhost:8080/v1/user/self" -H "accept: application/json" -H  "Content-Type: application/json" -H "Authorization: Bearer <token>" -d "{\"first_name\":\"Boran\",\"last_name\":\"Yildirim\",\"password\":\"1*Skdjfhskdfjhg\",\"username\":\"jane.doe@example.com\"}"
 ```
 
 #### Example get a user with id:
 ```
-curl -X GET "http://localhost:8080/v1/user/<user-id>"
+curl -v -X GET "http://localhost:8080/v1/user/<user-id>"
 ```
 It returns user data with \<user-id>.
