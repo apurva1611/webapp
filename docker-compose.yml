@@ -1,0 +1,33 @@
+version: "2"
+services:
+  app:
+    container_name: webapp
+    restart: always
+    build: .
+    ports:
+      - "8080:8080"
+    networks:
+     - webapp_network
+    depends_on:
+      - "mysql" 
+
+  mysql:
+    image: mysql
+    container_name: mysql
+    volumes:
+      - dbdata:/var/lib/mysql
+    restart: always
+    networks:
+     - webapp_network
+    environment:
+      - MYSQL_ROOT_PASSWORD=pass1234
+      - MYSQL_DATABASE=webappdb
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=pass1234
+    ports:
+      - "3306:3306"
+volumes:
+  dbdata:
+networks:
+  webapp_network:
+    driver: bridge

@@ -15,7 +15,7 @@ var db *sql.DB
 const (
 	username = "root"
 	password = "pass1234"
-	hostname = "0.0.0.0:3306"
+	hostname = "mysql:3306"
 	dbname   = "webappdb"
 )
 
