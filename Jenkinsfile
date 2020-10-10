@@ -1,7 +1,7 @@
 node {
 
-    def registry = "dockerhubaccount/registry" 
-    def registryCredential = 'DockerHub_ID'
+    def registry = "achirashah/webapp-go" 
+    def registryCredential = 'achirashah'
     def commit_id = ''
 	def dockerImage = ''
 
@@ -25,7 +25,8 @@ node {
     	* Third, latest tag.*/
         docker.withRegistry( '', registryCredential ) {
             dockerImage.push("$commit_id")
-            dockerImage.push("cloud-webapp_$commit_id")
+            dockerImage.push("webapp")
+			dockerImage.push("webapp_${env.BUILD_NUMBER}")
             dockerImage.push("latest")
 		}
     }

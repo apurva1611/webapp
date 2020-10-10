@@ -1,6 +1,7 @@
 version: "2"
 services:
   app:
+    image: achirashah/webapp-go:webapp
     container_name: webapp
     restart: always
     build: .
