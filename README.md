@@ -1,5 +1,5 @@
 # webapp
-Testing auto build
+Testing auto build - test
 #### To run the go server:
 ```
 docker build -t webapp .
