@@ -40,3 +40,5 @@ curl -v -X PUT "http://localhost:8080/v1/user/self" -H "accept: application/json
 curl -v -X GET "http://localhost:8080/v1/user/<user-id>"
 ```
 It returns user data with \<user-id>.
+
+"Testing"
