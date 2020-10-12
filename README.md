@@ -42,4 +42,4 @@ curl -v -X GET "http://localhost:8080/v1/user/<user-id>"
 ```
 It returns user data with \<user-id>.
 
-"Testing ci pipeline of jenkins. one more"
+"Testing ci pipeline of jenkins."
