@@ -9,6 +9,7 @@ docker run -p 8080:8080 webapp
 #### To run the go server and mysql:
 ```
 docker pull mysql
+sudo docker pull apurvamathur/webapp-go:c16d8cf581b1aca05f401afa0ed01e62bb89a756
 docker-compose up -d
 ```
 
