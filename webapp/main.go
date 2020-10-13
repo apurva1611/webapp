@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/adrg/postcode"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
@@ -18,17 +19,24 @@ func main() {
 	log.Fatal(router.Run(":8080"))
 }
 
+// SetupRouter function gets updates User from db
 func SetupRouter() *gin.Engine {
 	router := gin.Default()
 
 	v1 := router.Group("/v1")
 	authorized := v1.Group("/user/self")
+	fmt.Println(authorized)
 	authorized.Use(AuthMW(secret))
 	{
 		authorized.PUT("", UpdateUserSelf)
 		v1.POST("/user", CreateUser)
 		// user/:id includes user/self, so routing is handled in GetUserWithId
-		v1.GET("/user/:id", GetUserWithId, AuthMW(secret), GetUserSelf)
+		v1.GET("/user/:id", GetUserWithID, AuthMW(secret), GetUserSelf)
+	}
+	authorized = v1.Group("/watch/")
+	authorized.Use(AuthMW(secret))
+	{
+		authorized.POST("", AuthMW(secret), CreatWatch)
 	}
 
 	fmt.Printf("http://localhost:8080")
@@ -36,6 +44,7 @@ func SetupRouter() *gin.Engine {
 	return router
 }
 
+// GetUserSelf function gets User from db
 func GetUserSelf(c *gin.Context) {
 	// get Authorization header "Bearer <token>"
 	authHeader := c.Request.Header.Get("Authorization")
@@ -45,7 +54,7 @@ func GetUserSelf(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, "500, Internal server error")
 	}
 
-	user := queryById(id)
+	user := queryByID(id)
 
 	if user == nil {
 		c.JSON(http.StatusNotFound, "User self not found")
@@ -55,6 +64,7 @@ func GetUserSelf(c *gin.Context) {
 	c.JSON(http.StatusOK, *user)
 }
 
+// UpdateUserSelf function gets updates User from db
 func UpdateUserSelf(c *gin.Context) {
 	authHeader := c.Request.Header.Get("Authorization")
 	fmt.Printf(authHeader)
@@ -64,7 +74,7 @@ func UpdateUserSelf(c *gin.Context) {
 		return
 	}
 
-	qUser := queryById(id)
+	qUser := queryByID(id)
 	if qUser == nil {
 		c.JSON(http.StatusNotFound, "User self not found")
 		return
@@ -93,6 +103,7 @@ func UpdateUserSelf(c *gin.Context) {
 	}
 }
 
+// CreateUser function gets User from db
 func CreateUser(c *gin.Context) {
 	user := User{}
 
@@ -140,7 +151,8 @@ func CreateUser(c *gin.Context) {
 	}
 }
 
-func GetUserWithId(c *gin.Context) {
+// GetUserWithID function gets UserID from db
+func GetUserWithID(c *gin.Context) {
 	id := c.Param("id")
 
 	// if v1/user/self is called, skip this function and move to auth middleware
@@ -152,7 +164,7 @@ func GetUserWithId(c *gin.Context) {
 	// prevent calling other handlers AuthMW and GetUserSelf
 	c.Abort()
 
-	user := queryById(id)
+	user := queryByID(id)
 
 	if user == nil {
 		c.JSON(http.StatusNotFound, "User with id: "+id+" does not exist")
@@ -160,4 +172,45 @@ func GetUserWithId(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, *user)
+}
+
+// CreatWatch function
+func CreatWatch(c *gin.Context) {
+	authHeader := c.Request.Header.Get("Authorization")
+	fmt.Printf(authHeader)
+	id, err := ParseToken(authHeader)
+	if err != nil {
+		c.JSON(http.StatusNoContent, "204, No content")
+		return
+	}
+	watch := Watch{}
+
+	if c.ShouldBindJSON(&watch) == nil {
+		if err := postcode.Validate(watch.Zipcode); err != nil {
+			c.JSON(http.StatusBadRequest, "400 Bad request")
+		}
+		// assign user id
+		watch.UserID = id
+
+		// generate (Version 4) UUID
+		wid, _ := uuid.NewRandom()
+		watch.WatchID = wid.String()
+
+		// get current time in UTC
+		// format the time and assign the value to the fields
+		watch.WatchCreated = time.Now().UTC().Format("2006-01-02 03:04:05")
+		watch.WatchUpdated = watch.WatchCreated
+
+		// generate (Version 4) UUID
+		aid, _ := uuid.NewRandom()
+		watch.Alerts.AlertID = aid.String()
+
+		// get current time in UTC
+		// format the time and assign the value to the fields
+		watch.Alerts.AlertCreated = time.Now().UTC().Format("2006-01-02 03:04:05")
+		watch.Alerts.AlertUpdated = watch.Alerts.AlertCreated
+
+	} else {
+		c.JSON(http.StatusBadRequest, "400 Bad request")
+	}
 }

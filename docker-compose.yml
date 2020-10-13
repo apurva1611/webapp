@@ -1,12 +1,12 @@
 version: "2"
 services:
   app:
-    image: achirashah/webapp-go:webapp
-    container_name: webapp
+    image: dockerhub/repo:webapp-node
+    container_name: webapp-node
     restart: always
     build: .
     ports:
-      - "8080:8080"
+      - "3000:3000"
     networks:
      - webapp_network
     depends_on:

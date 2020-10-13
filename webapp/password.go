@@ -4,15 +4,14 @@ import (
 	"unicode"
 )
 
-// Password validates plain password against the rules defined below.
-//
-// upp: at least one upper case letter.
-// low: at least one lower case letter.
-// num: at least one digit.
-// sym: at least one special character.
-// tot: at least eight characters long.
-// No empty string or whitespace.
+// IsPasswordValid validates plain password against the rules defined below.
 func IsPasswordValid(pass string) bool {
+	// upp: at least one upper case letter.
+	// low: at least one lower case letter.
+	// num: at least one digit.
+	// sym: at least one special character.
+	// tot: at least eight characters long.
+	// No empty string or whitespace.
 	var (
 		upp, low, num, sym bool
 		tot                uint8
