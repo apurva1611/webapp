@@ -1,7 +1,7 @@
 version: "2"
 services:
   app:
-    image: apurvamathur/webapp-go:c16d8cf581b1aca05f401afa0ed01e62bb89a756
+    image: apurvamathur/webapp-go:c443b52ffafb8f7f9b71b2e5e86b1a59c911faca
     container_name: webapp
     restart: always
     build: .

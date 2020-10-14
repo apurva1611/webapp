@@ -30,6 +30,17 @@ func SetupRouter() *gin.Engine {
 		// user/:id includes user/self, so routing is handled in GetUserWithId
 		v1.GET("/user/:id", GetUserWithId, AuthMW(secret), GetUserSelf)
 	}
+	// grouping watch apis together
+	authorized_two := v1.Group("/watch")
+	authorized_two.Use(AuthMW(secret))
+	{   // post api for watch 
+		authorized_two.POST("", CreateWatch)
+		authorized_two.PUT("/:id", UpdateUserSelf)
+		authorized_two.GET("/:id", GetUserWithId)
+		authorized_two.DELETE("/:id", CreateUser)
+		v1.GET("/watches",GetAllWatches)
+	}
+
 
 	fmt.Printf("http://localhost:8080")
 
@@ -136,7 +147,7 @@ func CreateUser(c *gin.Context) {
 
 		c.JSON(http.StatusOK, gin.H{"user": resp, "token": token})
 	} else {
-		c.JSON(http.StatusBadRequest, "400 Bad request")
+		c.JSON(http.StatusBadRequest, "400 Bad request HERE")
 	}
 }
 
