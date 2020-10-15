@@ -1,9 +1,9 @@
 package main
 
 import (
-	"encoding/json"
 	"context"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"log"
 	"time"
@@ -82,7 +82,7 @@ func createTable() {
 		created datetime NOT NULL,
 		modified datetime NOT NULL,
 		PRIMARY KEY (id, username))ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;`)
-    // create table watch
+	// create table watch
 	_, err1 := db.Exec(`CREATE TABLE IF NOT EXISTS webappdb.watch(
 		watch_id varchar(100) NOT NULL,
 		user_id varchar(100) COLLATE utf8_unicode_ci NOT NULL,
@@ -93,7 +93,7 @@ func createTable() {
 		PRIMARY KEY (watch_id),
 		FOREIGN KEY (user_id) REFERENCES users(id) 
 		)ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;`)
-    // create table alert
+	// create table alert
 	_, err2 := db.Exec(`CREATE TABLE IF NOT EXISTS webappdb.alert(
 		alert_id varchar(100) NOT NULL,
 		watch_id varchar(100) COLLATE utf8_unicode_ci NOT NULL,
@@ -105,7 +105,7 @@ func createTable() {
 		PRIMARY KEY (alert_id),
 		FOREIGN KEY (watch_id) REFERENCES watch(watch_id) 
 		)ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;`)
-	
+
 	if err != nil {
 		panic(err)
 	}
@@ -191,7 +191,7 @@ func updateUser(user User) bool {
 	return true
 }
 
-func insertWatch(watch WATCH)bool {
+func insertWatch(watch WATCH) bool {
 	insert, err := db.Prepare(`INSERT INTO webappdb.watch(watch_id, user_id,zipcode, alerts, watch_created, watch_updated) 
 						VALUES (?, ?, ?, ?, ?, ?)`)
 
@@ -199,9 +199,9 @@ func insertWatch(watch WATCH)bool {
 		log.Printf(err.Error())
 		return false
 	}
-	alerts_json,err := json.Marshal(&watch.Alerts)
+	alerts_json, err := json.Marshal(&watch.Alerts)
 	fmt.Println(string(alerts_json))
-	_, err = insert.Exec(watch.ID, watch.UserId, watch.Zipcode,alerts_json, watch.WatchCreated,watch.WatchUpdated)
+	_, err = insert.Exec(watch.ID, watch.UserId, watch.Zipcode, alerts_json, watch.WatchCreated, watch.WatchUpdated)
 	if err != nil {
 		log.Printf(err.Error())
 		return false
@@ -209,9 +209,10 @@ func insertWatch(watch WATCH)bool {
 	fmt.Println("Watch inserted")
 	return true
 }
+
 // func queryWatchByUserId(id string) *WATCHES {
 // 	watches = WATCHES
-// 	rows,err := db.Query(`SELECT watch_id, user_id, zipcode, alerts, watch_created, watch_updated 
+// 	rows,err := db.Query(`SELECT watch_id, user_id, zipcode, alerts, watch_created, watch_updated
 // 							FROM webappdb.watch WHERE id = ?`, id)
 // 	defer rows.Close()
 //     var int i
@@ -225,7 +226,7 @@ func insertWatch(watch WATCH)bool {
 // 		//fmt.Println(id, firstName)
 // 		watches[i]=watch
 // 		i++
-		
+
 // 	}
 // 	// get any error encountered during iteration
 // 	err = rows.Err()
@@ -240,7 +241,7 @@ func insertWatch(watch WATCH)bool {
 func queryByWatchID(id string) *WATCH {
 	watch := WATCH{}
 	err := db.QueryRow(`SELECT watch_id, user_id, zipcode, alerts, watch_created, watch_updated 
-							FROM webappdb.watch WHERE watch_id = ?`, id).Scan(&watch.ID, &watch.UserId, &watch.Zipcode, &watch.Alerts,&watch.WatchCreated, &watch.WatchUpdated)
+							FROM webappdb.watch WHERE watch_id = ?`, id).Scan(&watch.ID, &watch.UserId, &watch.Zipcode, &watch.Alerts, &watch.WatchCreated, &watch.WatchUpdated)
 	if err != nil {
 		log.Printf(err.Error())
 		return nil
