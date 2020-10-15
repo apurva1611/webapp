@@ -5,8 +5,6 @@ import (
 	"log"
 	"net/http"
 	"time"
-
-	"github.com/adrg/postcode"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
@@ -33,11 +31,11 @@ func SetupRouter() *gin.Engine {
 		// user/:id includes user/self, so routing is handled in GetUserWithId
 		v1.GET("/user/:id", GetUserWithID, AuthMW(secret), GetUserSelf)
 	}
-	authorized = v1.Group("/watch/")
-	authorized.Use(AuthMW(secret))
-	{
-		authorized.POST("", AuthMW(secret), CreatWatch)
-	}
+	// authorized = v1.Group("/watch/")
+	// authorized.Use(AuthMW(secret))
+	// {
+	// 	authorized.POST("", AuthMW(secret), CreatWatch)
+	// }
 	// grouping watch apis together
 	authorized_two := v1.Group("/watch")
 	authorized_two.Use(AuthMW(secret))
@@ -186,42 +184,42 @@ func GetUserWithID(c *gin.Context) {
 }
 
 // CreatWatch function
-func CreatWatch(c *gin.Context) {
-	authHeader := c.Request.Header.Get("Authorization")
-	fmt.Printf(authHeader)
-	id, err := ParseToken(authHeader)
-	if err != nil {
-		c.JSON(http.StatusNoContent, "204, No content")
-		return
-	}
-	watch := Watch{}
+// func CreatWatch(c *gin.Context) {
+// 	authHeader := c.Request.Header.Get("Authorization")
+// 	fmt.Printf(authHeader)
+// 	id, err := ParseToken(authHeader)
+// 	if err != nil {
+// 		c.JSON(http.StatusNoContent, "204, No content")
+// 		return
+// 	}
+// 	watch := WATCH{}
 
-	if c.ShouldBindJSON(&watch) == nil {
-		if err := postcode.Validate(watch.Zipcode); err != nil {
-			c.JSON(http.StatusBadRequest, "400 Bad request")
-		}
-		// assign user id
-		watch.UserID = id
+// 	if c.ShouldBindJSON(&watch) == nil {
+// 		if err := postcode.Validate(watch.Zipcode); err != nil {
+// 			c.JSON(http.StatusBadRequest, "400 Bad request")
+// 		}
+// 		// assign user id
+// 		watch.UserId = id
 
-		// generate (Version 4) UUID
-		wid, _ := uuid.NewRandom()
-		watch.WatchID = wid.String()
+// 		// generate (Version 4) UUID
+// 		wid, _ := uuid.NewRandom()
+// 		watch.ID = wid.String()
 
-		// get current time in UTC
-		// format the time and assign the value to the fields
-		watch.WatchCreated = time.Now().UTC().Format("2006-01-02 03:04:05")
-		watch.WatchUpdated = watch.WatchCreated
+// 		// get current time in UTC
+// 		// format the time and assign the value to the fields
+// 		watch.WatchCreated = time.Now().UTC().Format("2006-01-02 03:04:05")
+// 		watch.WatchUpdated = watch.WatchCreated
 
-		// generate (Version 4) UUID
-		aid, _ := uuid.NewRandom()
-		watch.Alerts.AlertID = aid.String()
+// 		// generate (Version 4) UUID
+// 		aid, _ := uuid.NewRandom()
+// 		watch.Alerts.AlertID = aid.String()
 
-		// get current time in UTC
-		// format the time and assign the value to the fields
-		watch.Alerts.AlertCreated = time.Now().UTC().Format("2006-01-02 03:04:05")
-		watch.Alerts.AlertUpdated = watch.Alerts.AlertCreated
+// 		// get current time in UTC
+// 		// format the time and assign the value to the fields
+// 		watch.Alerts.AlertCreated = time.Now().UTC().Format("2006-01-02 03:04:05")
+// 		watch.Alerts.AlertUpdated = watch.Alerts.AlertCreated
 
-	} else {
-		c.JSON(http.StatusBadRequest, "400 Bad request")
-	}
-}
+// 	} else {
+// 		c.JSON(http.StatusBadRequest, "400 Bad request")
+// 	}
+// }
