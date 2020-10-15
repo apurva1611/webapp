@@ -36,7 +36,7 @@ func SetupRouter() *gin.Engine {
 	{   // post api for watch 
 		authorized_two.POST("", CreateWatch)
 		authorized_two.PUT("/:id", UpdateUserSelf)
-		authorized_two.GET("/:id", GetUserWithId)
+		authorized_two.GET("/:id", GetWatchById)
 		authorized_two.DELETE("/:id", CreateUser)
 		v1.GET("/watches",GetAllWatches)
 	}

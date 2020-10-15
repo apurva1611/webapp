@@ -194,7 +194,7 @@ func insertWatch(watch WATCH)bool {
 		log.Printf(err.Error())
 		return false
 	}
-
+	fmt.Println("Watch inserted")
 	return true
 }
 // func queryWatchByUserId(id string) *WATCHES {
@@ -233,5 +233,23 @@ func queryByWatchID(id string) *WATCH {
 		log.Printf(err.Error())
 		return nil
 	}
+	//fmt.printf(watch)
 	return &watch
+}
+
+func insertAlert(alert ALERT) bool {
+	insert, err := db.Prepare(`INSERT INTO webappdb.alert(alert_id, watch_id, field_type, operator, value, alert_created, alert_updated) 
+						VALUES (?, ?, ?, ?, ?, ?, ?)`)
+
+	if err != nil {
+		log.Printf(err.Error())
+		return false
+	}
+	_, err = insert.Exec(alert.ID, alert.WatchId, alert.FieldType, alert.Operator, alert.Value, alert.AlertCreated, alert.AlertUpdated)
+	if err != nil {
+		log.Printf(err.Error())
+		return false
+	}
+
+	return true
 }
