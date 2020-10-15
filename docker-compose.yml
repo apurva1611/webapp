@@ -1,8 +1,8 @@
 version: "2"
 services:
   app:
-    image: dockerhub/repo:webapp-node
-    container_name: webapp-node
+    image: apurvamathur/webapp-go:c443b52ffafb8f7f9b71b2e5e86b1a59c911faca
+    container_name: webapp
     restart: always
     build: .
     ports:
