@@ -3,7 +3,6 @@ module webapp
 go 1.14
 
 require (
-	github.com/adrg/postcode v0.0.0-20200117094834-0b6f2092b6b6
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-gonic/gin v1.6.3
 	github.com/go-playground/assert/v2 v2.0.1
