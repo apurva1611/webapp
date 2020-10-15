@@ -2,11 +2,11 @@ package main
 
 import (
 	"fmt"
+	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"log"
 	"net/http"
 	"time"
-	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 )
 
 func main() {
@@ -39,14 +39,13 @@ func SetupRouter() *gin.Engine {
 	// grouping watch apis together
 	authorized_two := v1.Group("/watch")
 	authorized_two.Use(AuthMW(secret))
-	{   // post api for watch 
+	{ // post api for watch
 		authorized_two.POST("", CreateWatch)
 		authorized_two.PUT("/:id", UpdateWatchById)
 		authorized_two.GET("/:id", GetWatchById)
 		authorized_two.DELETE("/:id", DeleteWatch)
 		v1.GET("/watches",GetAllWatches)
 	}
-
 
 	fmt.Printf("http://localhost:8080")
 

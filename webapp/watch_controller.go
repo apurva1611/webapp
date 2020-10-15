@@ -2,28 +2,28 @@ package main
 
 import (
 	"fmt"
-	"net/http"
-	"time"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"net/http"
+	"time"
 )
 
 func CreateWatch(c *gin.Context) {
-	watch:=WATCH{}
+	watch := WATCH{}
 	authHeader := c.Request.Header.Get("Authorization")
 	fmt.Printf(authHeader)
 	id, err := ParseToken(authHeader)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, "No Content")
+		c.JSON(http.StatusUnauthorized, "Unauthorized")
 		return
 	}
 
 	qUser := queryById(id)
 	if qUser == nil {
-		c.JSON(http.StatusUnauthorized, "User not found")
+		c.JSON(http.StatusNotFound, "User not found")
 		return
 	}
-    
+
 	if c.ShouldBindJSON(&watch) == nil {
 		fmt.Printf(watch.Zipcode)
 		// generate (Version 4) UUID
@@ -38,7 +38,7 @@ func CreateWatch(c *gin.Context) {
 		watch.WatchCreated = time.Now().UTC().Format("2006-01-02 03:04:05")
 		watch.WatchUpdated = watch.WatchCreated
 		// for all alerts create proper data
-		for i := range  watch.Alerts{
+		for i := range watch.Alerts {
 			uid_two, _ := uuid.NewRandom()
 			watch.Alerts[i].ID = uid_two.String()
 			watch.Alerts[i].WatchId = watch.ID
@@ -47,28 +47,28 @@ func CreateWatch(c *gin.Context) {
 			watch.Alerts[i].AlertCreated = watch.WatchCreated
 			watch.Alerts[i].AlertUpdated = watch.WatchCreated
 		}
-        // add watch to watch table
-		if !insertWatch(watch){
+		// add watch to watch table
+		if !insertWatch(watch) {
 			c.JSON(http.StatusBadRequest, "error in watch")
 			return
 		}
 		// add alerts to alert table
-		for i := range  watch.Alerts{
+		for i := range watch.Alerts {
 			//fmt.println("Watch_id")
 			//fmt.println(watch.ID)
-			if !insertAlert(watch.Alerts[i]){
+			if !insertAlert(watch.Alerts[i]) {
 				c.JSON(http.StatusBadRequest, "Alerts are incorrect")
 				return
 			}
 		}
 		// remove watch_id from alerts before sending response
 		resp := watch
-		for i := range resp.Alerts{
-			 resp.Alerts[i].WatchId = ""
+		for i := range resp.Alerts {
+			resp.Alerts[i].WatchId = ""
 		}
 		// RETURN THE INSERTED WATCH
-		c.JSON(http.StatusCreated,resp)
-	
+		c.JSON(http.StatusCreated, resp)
+
 	} else {
 		fmt.Printf("Error")
 		c.JSON(http.StatusBadRequest, "400 Bad request no queries made")
@@ -80,12 +80,12 @@ func GetAllWatches(c *gin.Context) {
 	fmt.Printf(authHeader)
 	id, err := ParseToken(authHeader)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, "unauthorized")
+		c.JSON(http.StatusUnauthorized, "Unauthorized")
 		return
 	}
 	qUser := queryById(id)
 	if qUser == nil {
-		c.JSON(http.StatusUnauthorized, "User not found")
+		c.JSON(http.StatusNotFound, "User not found")
 		return
 	}
 	qWatches:= queryWatchByUserId(id)
@@ -101,13 +101,13 @@ func GetWatchById(c *gin.Context) {
 	fmt.Printf(authHeader)
 	id, err := ParseToken(authHeader)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, "unauthorized")
+		c.JSON(http.StatusUnauthorized, "Unauthorized")
 		return
 	}
 
 	qUser := queryById(id)
 	if qUser == nil {
-		c.JSON(http.StatusUnauthorized, "User not found")
+		c.JSON(http.StatusNotFound, "User not found")
 		return
 	}
 	watch_id := c.Param("id")
@@ -228,4 +228,3 @@ func DeleteWatch(c *gin.Context) {
 	}
 	c.Status(http.StatusNoContent)
 }
-
