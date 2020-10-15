@@ -88,12 +88,12 @@ func GetAllWatches(c *gin.Context) {
 		c.JSON(http.StatusNotFound, "User not found")
 		return
 	}
-	qWatches:= queryWatchByUserId(id)
+	qWatches := queryWatchByUserId(id)
 	if qWatches == nil {
 		c.JSON(http.StatusUnauthorized, "Watches not found")
 		return
 	}
-	c.JSON(http.StatusOK,qWatches)
+	c.JSON(http.StatusOK, qWatches)
 }
 
 func GetWatchById(c *gin.Context) {
@@ -116,13 +116,13 @@ func GetWatchById(c *gin.Context) {
 		c.JSON(http.StatusNotFound, "watch with id: "+watch_id+" does not exist")
 		return
 	}
-	if(qUser.ID!=watch.UserId){
+	if qUser.ID != watch.UserId {
 		c.JSON(http.StatusUnauthorized, "User not owner of the watch")
 		return
 
 	}
 
-	c.JSON(http.StatusOK,watch)
+	c.JSON(http.StatusOK, watch)
 }
 
 func UpdateWatchById(c *gin.Context) {
@@ -130,7 +130,7 @@ func UpdateWatchById(c *gin.Context) {
 	fmt.Printf(authHeader)
 	id, err := ParseToken(authHeader)
 	if err != nil {
-		c.JSON(http.StatusNoContent, "204, No content")
+		c.JSON(http.StatusUnauthorized, "Unauthorized")
 		return
 	}
 
@@ -145,7 +145,7 @@ func UpdateWatchById(c *gin.Context) {
 		c.JSON(http.StatusNotFound, "watch with id: "+watch_id+" does not exist")
 		return
 	}
-	if(qUser.ID!=watch.UserId){
+	if qUser.ID != watch.UserId {
 		c.JSON(http.StatusUnauthorized, "User not owner of the watch")
 		return
 
@@ -158,34 +158,33 @@ func UpdateWatchById(c *gin.Context) {
 		updatedWatch.UserId = watch.UserId
 		updatedWatch.WatchCreated = watch.WatchCreated
 		updatedWatch.WatchUpdated = time.Now().UTC().Format("2006-01-02 03:04:05")
-		for i := range updatedWatch.Alerts{
+		for i := range updatedWatch.Alerts {
 			uid_two, _ := uuid.NewRandom()
 			updatedWatch.Alerts[i].ID = uid_two.String()
 			updatedWatch.Alerts[i].WatchId = updatedWatch.ID
 			updatedWatch.Alerts[i].AlertCreated = updatedWatch.WatchUpdated
 			updatedWatch.Alerts[i].AlertUpdated = updatedWatch.WatchUpdated
 		}
-		for i := range watch.Alerts{
+		for i := range watch.Alerts {
 			if !deleteAlert(watch.Alerts[i].ID) {
 				c.JSON(http.StatusBadRequest, "400 Bad request")
 				return
 			}
 		}
-		
 
 		if !updateWatch(updatedWatch) {
 			c.JSON(http.StatusBadRequest, "400 Bad request")
 			return
 		}
 		fmt.Printf("Error here")
-		for i := range updatedWatch.Alerts{
-			if !insertAlert(updatedWatch.Alerts[i]){
+		for i := range updatedWatch.Alerts {
+			if !insertAlert(updatedWatch.Alerts[i]) {
 				c.JSON(http.StatusBadRequest, "Alerts are incorrect")
 				return
 			}
 		}
 
-	c.Status(http.StatusNoContent)
+		c.Status(http.StatusNoContent)
 	} else {
 		c.JSON(http.StatusBadRequest, "400 Bad request")
 	}
@@ -196,7 +195,7 @@ func DeleteWatch(c *gin.Context) {
 	fmt.Printf(authHeader)
 	id, err := ParseToken(authHeader)
 	if err != nil {
-		c.JSON(http.StatusNoContent, "204, No content")
+		c.JSON(http.StatusUnauthorized, "Unauthorized")
 		return
 	}
 
@@ -211,12 +210,12 @@ func DeleteWatch(c *gin.Context) {
 		c.JSON(http.StatusNotFound, "watch with id: "+watch_id+" does not exist")
 		return
 	}
-	if(qUser.ID!=watch.UserId){
+	if qUser.ID != watch.UserId {
 		c.JSON(http.StatusUnauthorized, "User not owner of the watch")
 		return
 
 	}
-	for i := range watch.Alerts{
+	for i := range watch.Alerts {
 		if !deleteAlert(watch.Alerts[i].ID) {
 			c.JSON(http.StatusBadRequest, "400 Bad request")
 			return
