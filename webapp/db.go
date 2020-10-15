@@ -15,9 +15,8 @@ var db *sql.DB
 
 const (
 	username = "root"
-	password = "Rajuabha25!"
-	hostname = "localhost"
-	port=3306
+	password = "pass1234"
+	hostname = "localhost:3306"
 	dbname   = "webappdb"
 )
 
@@ -45,6 +44,7 @@ func createDb() {
 	defer cancelFunc()
 
 	res, err := db.ExecContext(ctx, "CREATE DATABASE IF NOT EXISTS "+dbname)
+
 	if err != nil {
 		log.Printf("Error %s when creating DB\n", err)
 		return
@@ -117,7 +117,7 @@ func createTable() {
 	}
 }
 
-func queryById(id string) *User {
+func queryByID(id string) *User {
 	user := User{}
 	err := db.QueryRow(`SELECT id, firstname, lastname, username, created, modified 
 							FROM webappdb.users WHERE id = ?`, id).Scan(&user.ID, &user.FirstName, &user.LastName, &user.Username,

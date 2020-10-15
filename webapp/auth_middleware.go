@@ -2,12 +2,13 @@ package main
 
 import (
 	"fmt"
-	"github.com/dgrijalva/jwt-go"
-	"github.com/dgrijalva/jwt-go/request"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/dgrijalva/jwt-go"
+	"github.com/dgrijalva/jwt-go/request"
+	"github.com/gin-gonic/gin"
 )
 
 var (
@@ -15,6 +16,7 @@ var (
 	secret = "dev-secret"
 )
 
+// CreateToken represents functin to create token.
 func CreateToken(id string) string {
 	// Create the token
 	token := jwt.New(jwt.GetSigningMethod("HS256"))
@@ -33,6 +35,7 @@ func CreateToken(id string) string {
 	return tokenString
 }
 
+// ParseToken represents functin to parse token.
 func ParseToken(authHeader string) (string, error) {
 	// split ["Bearer", <token>"]
 	bearerToken := strings.Split(authHeader, " ")
@@ -54,15 +57,15 @@ func ParseToken(authHeader string) (string, error) {
 	if claims, ok := parsedToken.Claims.(jwt.MapClaims); ok && parsedToken.Valid {
 		if id, ok := claims["id"].(string); ok {
 			return id, nil
-		} else {
-			return "", nil
 		}
-	} else {
-		return "", err
+		return "", nil
 	}
+	return "", err
 }
 
+// AuthMW represents functin to authenticate token.
 func AuthMW(secret string) gin.HandlerFunc {
+	fmt.Println("secret" + secret)
 	return func(c *gin.Context) {
 		_, err := request.ParseFromRequest(c.Request, request.OAuth2Extractor, func(token *jwt.Token) (interface{}, error) {
 			b := []byte(secret)
