@@ -14,13 +14,13 @@ func CreateWatch(c *gin.Context) {
 	fmt.Printf(authHeader)
 	id, err := ParseToken(authHeader)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, "No Content")
+		c.JSON(http.StatusUnauthorized, "Unauthorized")
 		return
 	}
 
 	qUser := queryById(id)
 	if qUser == nil {
-		c.JSON(http.StatusUnauthorized, "User not found")
+		c.JSON(http.StatusNotFound, "User not found")
 		return
 	}
 
@@ -81,13 +81,13 @@ func GetAllWatches(c *gin.Context) {
 	fmt.Printf(authHeader)
 	id, err := ParseToken(authHeader)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, "unauthorized")
+		c.JSON(http.StatusUnauthorized, "Unauthorized")
 		return
 	}
 
 	qUser := queryById(id)
 	if qUser == nil {
-		c.JSON(http.StatusUnauthorized, "User not found")
+		c.JSON(http.StatusNotFound, "User not found")
 		return
 	}
 
@@ -101,13 +101,13 @@ func GetWatchById(c *gin.Context) {
 	fmt.Printf(authHeader)
 	id, err := ParseToken(authHeader)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, "unauthorized")
+		c.JSON(http.StatusUnauthorized, "Unauthorized")
 		return
 	}
 
 	qUser := queryById(id)
 	if qUser == nil {
-		c.JSON(http.StatusUnauthorized, "User not found")
+		c.JSON(http.StatusNotFound, "User not found")
 		return
 	}
 	watch_id := c.Param("id")
