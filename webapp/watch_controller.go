@@ -76,7 +76,6 @@ func CreateWatch(c *gin.Context) {
 }
 
 func GetAllWatches(c *gin.Context) {
-	//watch:=WATCH{}
 	authHeader := c.Request.Header.Get("Authorization")
 	fmt.Printf(authHeader)
 	id, err := ParseToken(authHeader)
@@ -84,19 +83,20 @@ func GetAllWatches(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, "unauthorized")
 		return
 	}
-
 	qUser := queryById(id)
 	if qUser == nil {
 		c.JSON(http.StatusUnauthorized, "User not found")
 		return
 	}
-	
-	rows, err := db.Query("select watch_id,user_id,zipcode,alerts,watch_created,watch_updated from watch where user_id = ?", id)
-	c.JSON(http.StatusOK, rows)
+	qWatches:= queryWatchByUserId(id)
+	if qWatches == nil {
+		c.JSON(http.StatusUnauthorized, "Watches not found")
+		return
+	}
+	c.JSON(http.StatusOK,qWatches)
 }
 
 func GetWatchById(c *gin.Context) {
-	//watch:=WATCH{}
 	authHeader := c.Request.Header.Get("Authorization")
 	fmt.Printf(authHeader)
 	id, err := ParseToken(authHeader)
@@ -112,13 +112,120 @@ func GetWatchById(c *gin.Context) {
 	}
 	watch_id := c.Param("id")
 	watch := queryByWatchID(watch_id)
-
-
 	if watch == nil {
 		c.JSON(http.StatusNotFound, "watch with id: "+watch_id+" does not exist")
 		return
 	}
+	if(qUser.ID!=watch.UserId){
+		c.JSON(http.StatusUnauthorized, "User not owner of the watch")
+		return
 
-	c.JSON(http.StatusOK, *watch)
+	}
+
+	c.JSON(http.StatusOK,watch)
+}
+
+func UpdateWatchById(c *gin.Context) {
+	authHeader := c.Request.Header.Get("Authorization")
+	fmt.Printf(authHeader)
+	id, err := ParseToken(authHeader)
+	if err != nil {
+		c.JSON(http.StatusNoContent, "204, No content")
+		return
+	}
+
+	qUser := queryByID(id)
+	if qUser == nil {
+		c.JSON(http.StatusNotFound, "User self not found")
+		return
+	}
+	watch_id := c.Param("id")
+	watch := queryByWatchID(watch_id)
+	if watch == nil {
+		c.JSON(http.StatusNotFound, "watch with id: "+watch_id+" does not exist")
+		return
+	}
+	if(qUser.ID!=watch.UserId){
+		c.JSON(http.StatusUnauthorized, "User not owner of the watch")
+		return
+
+	}
+
+	updatedWatch := WATCH{}
+	if c.ShouldBindJSON(&updatedWatch) == nil {
+		// these values cannot be updated by the user
+		updatedWatch.ID = watch.ID
+		updatedWatch.UserId = watch.UserId
+		updatedWatch.WatchCreated = watch.WatchCreated
+		updatedWatch.WatchUpdated = time.Now().UTC().Format("2006-01-02 03:04:05")
+		for i := range updatedWatch.Alerts{
+			uid_two, _ := uuid.NewRandom()
+			updatedWatch.Alerts[i].ID = uid_two.String()
+			updatedWatch.Alerts[i].WatchId = updatedWatch.ID
+			updatedWatch.Alerts[i].AlertCreated = updatedWatch.WatchUpdated
+			updatedWatch.Alerts[i].AlertUpdated = updatedWatch.WatchUpdated
+		}
+		for i := range watch.Alerts{
+			if !deleteAlert(watch.Alerts[i].ID) {
+				c.JSON(http.StatusBadRequest, "400 Bad request")
+				return
+			}
+		}
+		
+
+		if !updateWatch(updatedWatch) {
+			c.JSON(http.StatusBadRequest, "400 Bad request")
+			return
+		}
+		fmt.Printf("Error here")
+		for i := range updatedWatch.Alerts{
+			if !insertAlert(updatedWatch.Alerts[i]){
+				c.JSON(http.StatusBadRequest, "Alerts are incorrect")
+				return
+			}
+		}
+
+	c.Status(http.StatusNoContent)
+	} else {
+		c.JSON(http.StatusBadRequest, "400 Bad request")
+	}
+}
+
+func DeleteWatch(c *gin.Context) {
+	authHeader := c.Request.Header.Get("Authorization")
+	fmt.Printf(authHeader)
+	id, err := ParseToken(authHeader)
+	if err != nil {
+		c.JSON(http.StatusNoContent, "204, No content")
+		return
+	}
+
+	qUser := queryByID(id)
+	if qUser == nil {
+		c.JSON(http.StatusNotFound, "User self not found")
+		return
+	}
+	watch_id := c.Param("id")
+	watch := queryByWatchID(watch_id)
+	if watch == nil {
+		c.JSON(http.StatusNotFound, "watch with id: "+watch_id+" does not exist")
+		return
+	}
+	if(qUser.ID!=watch.UserId){
+		c.JSON(http.StatusUnauthorized, "User not owner of the watch")
+		return
+
+	}
+	for i := range watch.Alerts{
+		if !deleteAlert(watch.Alerts[i].ID) {
+			c.JSON(http.StatusBadRequest, "400 Bad request")
+			return
+		}
+	}
+	if !deleteWatch(watch_id) {
+		c.JSON(http.StatusBadRequest, "400 Bad request")
+		return
+	}
+	c.Status(http.StatusNoContent)
 }
 

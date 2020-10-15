@@ -14,7 +14,7 @@ func main() {
 	createTable()
 	defer closeDB()
 	router := SetupRouter()
-	log.Fatal(router.Run(":8080"))
+	log.Fatal(router.Run(":8081"))
 }
 
 // SetupRouter function gets updates User from db
@@ -41,9 +41,9 @@ func SetupRouter() *gin.Engine {
 	authorized_two.Use(AuthMW(secret))
 	{   // post api for watch 
 		authorized_two.POST("", CreateWatch)
-		authorized_two.PUT("/:id", UpdateUserSelf)
+		authorized_two.PUT("/:id", UpdateWatchById)
 		authorized_two.GET("/:id", GetWatchById)
-		authorized_two.DELETE("/:id", CreateUser)
+		authorized_two.DELETE("/:id", DeleteWatch)
 		v1.GET("/watches",GetAllWatches)
 	}
 

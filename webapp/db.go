@@ -206,47 +206,64 @@ func insertWatch(watch WATCH)bool {
 		log.Printf(err.Error())
 		return false
 	}
-	fmt.Println("Watch inserted")
 	return true
 }
-// func queryWatchByUserId(id string) *WATCHES {
-// 	watches = WATCHES
-// 	rows,err := db.Query(`SELECT watch_id, user_id, zipcode, alerts, watch_created, watch_updated 
-// 							FROM webappdb.watch WHERE id = ?`, id)
-// 	defer rows.Close()
-//     var int i
-// 	for rows.Next() {
-// 		watch := WATCH{}
-// 		err = rows.Scan(&watch.ID, &watch.UserId,&watch.Zipcode, &watch.Alerts,&watch.WatchCreated, &watch.WatchUpdated)
-// 		if err != nil {
-// 		// handle this error
-// 		panic(err)
-// 		}
-// 		//fmt.Println(id, firstName)
-// 		watches[i]=watch
-// 		i++
+func queryWatchByUserId(id string) *[]WATCH {
+	var watches []WATCH
+	rows,err := db.Query(`SELECT watch_id, user_id, zipcode,watch_created, watch_updated 
+							FROM webappdb.watch WHERE user_id = ?`, id)
+	
+	defer rows.Close()					
+	for rows.Next() {
+		watch := WATCH{}
+		var alerts []ALERT
+		err = rows.Scan(&watch.ID, &watch.UserId,&watch.Zipcode,&watch.WatchCreated, &watch.WatchUpdated)
+		alerts_received := queryAlertsByWatchId(watch.ID)
+		//fmt.println(string(*alerts_received))
+		watch.Alerts = alerts
+		for _,element := range *alerts_received{
+			watch.Alerts = append(watch.Alerts, element)
+	   }
+		//fmt.println(watch.Alerts[0].ID)
+		if err != nil {
+		// handle this error
+		panic(err)
+		}
+		watches = append(watches, watch)
 		
-// 	}
-// 	// get any error encountered during iteration
-// 	err = rows.Err()
-// 	if err != nil {
-// 		panic(err)
-// 		return nil
-// 	}
-
-// 	return &watches
-// }
-
-func queryByWatchID(id string) *WATCH {
-	watch := WATCH{}
-	err := db.QueryRow(`SELECT watch_id, user_id, zipcode, alerts, watch_created, watch_updated 
-							FROM webappdb.watch WHERE watch_id = ?`, id).Scan(&watch.ID, &watch.UserId, &watch.Zipcode, &watch.Alerts,&watch.WatchCreated, &watch.WatchUpdated)
+	}
+	// get any error encountered during iteration
+	err = rows.Err()
 	if err != nil {
 		log.Printf(err.Error())
 		return nil
 	}
-	//fmt.printf(watch)
+
+	return &watches
+}
+
+func queryByWatchID(id string) *WATCH{
+	fmt.Println("Reached in watch query")
+	watch := WATCH{}
+	err := db.QueryRow(`SELECT watch_id, user_id, zipcode, watch_created,watch_updated
+							FROM webappdb.watch WHERE watch_id = ?`, id).Scan(&watch.ID, &watch.UserId, &watch.Zipcode, &watch.WatchCreated,&watch.WatchUpdated)
+	if err != nil {
+		log.Printf(err.Error())
+		return nil
+	}
+	var alerts []ALERT
+	alerts_received := queryAlertsByWatchId(id)
+	watch.Alerts = alerts
+	for _,element := range *alerts_received{
+		watch.Alerts = append(watch.Alerts, element)
+	}
+	fmt.Println(watch.ID)
+	fmt.Println(watch.Zipcode)
+	fmt.Println(watch.UserId)
+	fmt.Println(watch.WatchCreated)
+	fmt.Println(watch.WatchUpdated)
 	return &watch
+					
 }
 
 func insertAlert(alert ALERT) bool {
@@ -263,5 +280,71 @@ func insertAlert(alert ALERT) bool {
 		return false
 	}
 
+	return true
+}
+
+func queryAlertsByWatchId(id string) *[]ALERT {
+	var alerts []ALERT
+	rows,err := db.Query(`SELECT alert_id,field_type, operator, value,alert_created,alert_updated 
+							FROM webappdb.alert WHERE watch_id = ?`, id)
+	defer rows.Close()
+	for rows.Next() {
+		alert := ALERT{}
+		err = rows.Scan(&alert.ID,&alert.FieldType,&alert.Operator, &alert.Value,&alert.AlertCreated,&alert.AlertUpdated)
+		if err != nil {
+		// handle this error
+		panic(err)
+		}
+		alerts = append(alerts, alert)
+		
+	}
+	// get any error encountered during iteration
+	err = rows.Err()
+	if err != nil {
+		log.Printf(err.Error())
+		return nil
+	}
+
+	return &alerts
+
+
+}
+
+func deleteAlert(id string) bool {
+	delete, err := db.Prepare("DELETE FROM webappdb.alert WHERE alert_id=?")
+
+	delete.Exec(id)
+	if err != nil {
+		log.Printf(err.Error())
+		return false
+	}
+	return true
+}
+func updateWatch(watch WATCH) bool {
+	update, err := db.Prepare(`UPDATE webappdb.watch SET watch_id=?, user_id=?, zipcode=?, alerts=? , watch_created=?, watch_updated=?
+										WHERE watch_id=?`)
+
+	if err != nil {
+		log.Printf(err.Error())
+		return false
+	}
+	alerts_json,err := json.Marshal(&watch.Alerts)
+	_, err = update.Exec(watch.ID, watch.UserId, watch.Zipcode, alerts_json, watch.WatchCreated,watch.WatchUpdated,watch.ID)
+	if err != nil {
+		log.Printf(err.Error())
+		return false
+	}
+
+	return true
+}
+
+func deleteWatch(id string) bool {
+	delete, err := db.Prepare("DELETE FROM webappdb.watch WHERE watch_id=?")
+
+	delete.Exec(id)
+	if err != nil {
+		log.Printf(err.Error())
+		return false
+	}
 	return true
 }
