@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 func main() {
@@ -14,7 +15,7 @@ func main() {
 	createTable()
 	defer closeDB()
 	router := SetupRouter()
-	log.Fatal(router.Run(":8081"))
+	log.Fatal(router.Run(":8080"))
 }
 
 // SetupRouter function gets updates User from db
@@ -44,7 +45,7 @@ func SetupRouter() *gin.Engine {
 		authorized_two.PUT("/:id", UpdateWatchById)
 		authorized_two.GET("/:id", GetWatchById)
 		authorized_two.DELETE("/:id", DeleteWatch)
-		v1.GET("/watches",GetAllWatches)
+		v1.GET("/watches", GetAllWatches)
 	}
 
 	fmt.Printf("http://localhost:8080")

@@ -2,13 +2,18 @@ package main
 
 import (
 	"fmt"
+	"net/http"
+	"os"
+	"time"
+
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"net/http"
-	"time"
 )
 
 func CreateWatch(c *gin.Context) {
+	kafkaURL := os.Getenv("kafkaURL")
+	produceTopic := "watch"
+
 	watch := WATCH{}
 	authHeader := c.Request.Header.Get("Authorization")
 	fmt.Printf(authHeader)
@@ -61,11 +66,17 @@ func CreateWatch(c *gin.Context) {
 				return
 			}
 		}
-		// remove watch_id from alerts before sending response
+
 		resp := watch
+
+		fmt.Printf("SENDING resp to watch topic:\n %s", resp.ID)
+		produce(kafkaURL, produceTopic, resp, "insert")
+
+		// remove watch_id from alerts before sending response
 		for i := range resp.Alerts {
 			resp.Alerts[i].WatchId = ""
 		}
+
 		// RETURN THE INSERTED WATCH
 		c.JSON(http.StatusCreated, resp)
 
@@ -184,6 +195,11 @@ func UpdateWatchById(c *gin.Context) {
 			}
 		}
 
+		kafkaURL := os.Getenv("kafkaURL")
+		produceTopic := "watch"
+		fmt.Printf("SENDING updated watch to watch topic:\n %+v", updatedWatch)
+		produce(kafkaURL, produceTopic, updatedWatch, "update")
+
 		c.Status(http.StatusNoContent)
 	} else {
 		c.JSON(http.StatusBadRequest, "400 Bad request")
@@ -225,5 +241,11 @@ func DeleteWatch(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, "400 Bad request")
 		return
 	}
+
+	kafkaURL := os.Getenv("kafkaURL")
+	produceTopic := "watch"
+	fmt.Printf("SENDING watch to delete on watch topic:\n %+v", watch)
+	produce(kafkaURL, produceTopic, *watch, "delete")
+
 	c.Status(http.StatusNoContent)
 }
