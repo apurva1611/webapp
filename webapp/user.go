@@ -1,5 +1,6 @@
 package main
 
+// User represents a watch type.
 type User struct {
 	ID             string `json:"id"`
 	FirstName      string `json:"first_name" binding:"required"`
