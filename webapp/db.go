@@ -99,7 +99,7 @@ func createTable() {
 		watch_id varchar(100) COLLATE utf8_unicode_ci NOT NULL,
 		field_type ENUM('temp', 'feels_like', 'temp_min', 'temp_max', 'pressure','humidity') COLLATE utf8_unicode_ci NOT NULL,
 		operator ENUM('gt', 'gte', 'eq', 'lt', 'lte') COLLATE utf8_unicode_ci NOT NULL,
-		value int NOT NULL,
+		value float NOT NULL,
 		alert_created datetime NOT NULL,
 		alert_updated datetime NOT NULL,
 		PRIMARY KEY (alert_id),
@@ -210,27 +210,27 @@ func insertWatch(watch WATCH) bool {
 }
 func queryWatchByUserId(id string) *[]WATCH {
 	var watches []WATCH
-	rows,err := db.Query(`SELECT watch_id, user_id, zipcode,watch_created, watch_updated 
+	rows, err := db.Query(`SELECT watch_id, user_id, zipcode,watch_created, watch_updated 
 							FROM webappdb.watch WHERE user_id = ?`, id)
-	
-	defer rows.Close()					
+
+	defer rows.Close()
 	for rows.Next() {
 		watch := WATCH{}
 		var alerts []ALERT
-		err = rows.Scan(&watch.ID, &watch.UserId,&watch.Zipcode,&watch.WatchCreated, &watch.WatchUpdated)
+		err = rows.Scan(&watch.ID, &watch.UserId, &watch.Zipcode, &watch.WatchCreated, &watch.WatchUpdated)
 		alerts_received := queryAlertsByWatchId(watch.ID)
 		//fmt.println(string(*alerts_received))
 		watch.Alerts = alerts
-		for _,element := range *alerts_received{
+		for _, element := range *alerts_received {
 			watch.Alerts = append(watch.Alerts, element)
-	   }
+		}
 		//fmt.println(watch.Alerts[0].ID)
 		if err != nil {
-		// handle this error
-		panic(err)
+			// handle this error
+			panic(err)
 		}
 		watches = append(watches, watch)
-		
+
 	}
 	// get any error encountered during iteration
 	err = rows.Err()
@@ -242,11 +242,11 @@ func queryWatchByUserId(id string) *[]WATCH {
 	return &watches
 }
 
-func queryByWatchID(id string) *WATCH{
+func queryByWatchID(id string) *WATCH {
 	fmt.Println("Reached in watch query")
 	watch := WATCH{}
 	err := db.QueryRow(`SELECT watch_id, user_id, zipcode, watch_created,watch_updated
-							FROM webappdb.watch WHERE watch_id = ?`, id).Scan(&watch.ID, &watch.UserId, &watch.Zipcode, &watch.WatchCreated,&watch.WatchUpdated)
+							FROM webappdb.watch WHERE watch_id = ?`, id).Scan(&watch.ID, &watch.UserId, &watch.Zipcode, &watch.WatchCreated, &watch.WatchUpdated)
 	if err != nil {
 		log.Printf(err.Error())
 		return nil
@@ -254,7 +254,7 @@ func queryByWatchID(id string) *WATCH{
 	var alerts []ALERT
 	alerts_received := queryAlertsByWatchId(id)
 	watch.Alerts = alerts
-	for _,element := range *alerts_received{
+	for _, element := range *alerts_received {
 		watch.Alerts = append(watch.Alerts, element)
 	}
 	fmt.Println(watch.ID)
@@ -263,7 +263,7 @@ func queryByWatchID(id string) *WATCH{
 	fmt.Println(watch.WatchCreated)
 	fmt.Println(watch.WatchUpdated)
 	return &watch
-					
+
 }
 
 func insertAlert(alert ALERT) bool {
@@ -285,18 +285,18 @@ func insertAlert(alert ALERT) bool {
 
 func queryAlertsByWatchId(id string) *[]ALERT {
 	var alerts []ALERT
-	rows,err := db.Query(`SELECT alert_id,field_type, operator, value,alert_created,alert_updated 
+	rows, err := db.Query(`SELECT alert_id,field_type, operator, value,alert_created,alert_updated 
 							FROM webappdb.alert WHERE watch_id = ?`, id)
 	defer rows.Close()
 	for rows.Next() {
 		alert := ALERT{}
-		err = rows.Scan(&alert.ID,&alert.FieldType,&alert.Operator, &alert.Value,&alert.AlertCreated,&alert.AlertUpdated)
+		err = rows.Scan(&alert.ID, &alert.FieldType, &alert.Operator, &alert.Value, &alert.AlertCreated, &alert.AlertUpdated)
 		if err != nil {
-		// handle this error
-		panic(err)
+			// handle this error
+			panic(err)
 		}
 		alerts = append(alerts, alert)
-		
+
 	}
 	// get any error encountered during iteration
 	err = rows.Err()
@@ -306,7 +306,6 @@ func queryAlertsByWatchId(id string) *[]ALERT {
 	}
 
 	return &alerts
-
 
 }
 
@@ -328,8 +327,8 @@ func updateWatch(watch WATCH) bool {
 		log.Printf(err.Error())
 		return false
 	}
-	alerts_json,err := json.Marshal(&watch.Alerts)
-	_, err = update.Exec(watch.ID, watch.UserId, watch.Zipcode, alerts_json, watch.WatchCreated,watch.WatchUpdated,watch.ID)
+	alerts_json, err := json.Marshal(&watch.Alerts)
+	_, err = update.Exec(watch.ID, watch.UserId, watch.Zipcode, alerts_json, watch.WatchCreated, watch.WatchUpdated, watch.ID)
 	if err != nil {
 		log.Printf(err.Error())
 		return false
