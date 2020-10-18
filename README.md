@@ -44,3 +44,7 @@ It returns user data with \<user-id>.
 
 "Testing ci pipeline of jenkins."
 sudo docker exec -it mysql mysql -u root -p
+
+Start/stop mysql local server:
+sudo service mysql start/stop
+
