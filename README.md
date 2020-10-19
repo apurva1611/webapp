@@ -44,3 +44,4 @@ It returns user data with \<user-id>.
 
 "Testing ci pipeline of jenkins."
 sudo docker exec -it mysql mysql -u root -p
+"cHECK pipeline"
