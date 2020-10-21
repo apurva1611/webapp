@@ -37,17 +37,19 @@ services:
       - "3306:3306"
 
   webapp:
-    image: webapp
+    image: achirashah/webapp-go:c0b482fb8134f36d87be1abb9efa9ce5f5f3e62a
     container_name: webapp
     environment:
       kafkaURL: kafka:9092
     restart: always
+    ports:
+      - "8080:8080"
     depends_on:
     - mysql 
     - kafka 
 
   poller:
-    image: poller
+    image: achirashah/poller:59f46659ab2189b46fa74e621cf6dce8f9621691
     container_name: poller
     environment:
       kafkaURL: kafka:9092
@@ -57,7 +59,7 @@ services:
     - kafka
 
   notifier:
-    image: notifier
+    image: achirashah/notifier:a9bdb2c1ee6d8c5f0f70e8fc3dfc6d7d55a13591
     container_name: notifier
     environment:
       kafkaURL: kafka:9092
