@@ -28,6 +28,7 @@ func SetupRouter() *gin.Engine {
 	authorized.Use(AuthMW(secret))
 	{
 		authorized.PUT("", UpdateUserSelf)
+		v1.GET("/healthcheck", healthcheck)
 		v1.POST("/user", CreateUser)
 		// user/:id includes user/self, so routing is handled in GetUserWithId
 		v1.GET("/user/:id", GetUserWithID, AuthMW(secret), GetUserSelf)
@@ -51,6 +52,9 @@ func SetupRouter() *gin.Engine {
 	fmt.Printf("http://localhost:8080")
 
 	return router
+}
+func healthcheck(c *gin.Context) {
+	c.JSON(http.StatusOK, "ok")
 }
 
 // GetUserSelf function gets User from db
