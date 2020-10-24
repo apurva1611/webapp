@@ -9,7 +9,7 @@ namespace:
 - api
 
 image:
-  repository: achirashah/webapp-go:webapp_8
+  repository: achirashah/webapp-go:webapp_10
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
@@ -73,8 +73,8 @@ secret:
   rdscred:
     name: rdscred
     type: Opaque
-    username: 
-    password:   
+    username: dbuser
+    password: dbpassword  
 
 ingress:
   enabled: false
