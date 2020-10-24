@@ -37,7 +37,7 @@ services:
       - "3306:3306"
 
   webapp:
-    image: achirashah/webapp-go:c0b482fb8134f36d87be1abb9efa9ce5f5f3e62a
+    image: achirashah/webapp-go   
     container_name: webapp
     environment:
       kafkaURL: kafka:9092
@@ -49,7 +49,7 @@ services:
     - kafka 
 
   poller:
-    image: achirashah/poller:59f46659ab2189b46fa74e621cf6dce8f9621691
+    image: achirashah/poller
     container_name: poller
     environment:
       kafkaURL: kafka:9092
@@ -59,7 +59,7 @@ services:
     - kafka
 
   notifier:
-    image: achirashah/notifier:a9bdb2c1ee6d8c5f0f70e8fc3dfc6d7d55a13591
+    image: achirashah/notifier
     container_name: notifier
     environment:
       kafkaURL: kafka:9092
