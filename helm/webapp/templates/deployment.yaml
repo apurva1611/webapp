@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "webapp.fullname" . }}
+  labels:
+    {{- include "webapp.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "webapp.selectorLabels" . | nindent 6 }}
+  strategy:
+    type: {{ .Values.deployment.type }}
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        {{- include "webapp.selectorLabels" . | nindent 8 }}
+    spec:    
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          envFrom:
+            - configMapRef:
+                name: {{ .Values.configmap.name }}-{{ .Release.Name }}
+          env:
+            - name: AWS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secret.awscred.name }}-{{ .Release.Name }}
+                  key: aws_key
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secret.awscred.name }}-{{ .Release.Name }}
+                  key: secret_key
+            - name: RDS_USER_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secret.rdscred.name }}-{{ .Release.Name }}
+                  key: username
+            - name: RDS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secret.rdscred.name }}-{{ .Release.Name }}
+                  key: password          
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 20
+          resources:
+            requests:
+              memory: "500Mi"
+              cpu: 1
+            limits:
+              memory: "1000Mi"
+              cpu: 1
+      imagePullSecrets:
+        - name: {{ .Values.secret.regcred.name }}-{{ .Release.Name }}

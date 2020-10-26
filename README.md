@@ -1,6 +1,7 @@
 # webapp
 "pipeline check"
 Testing auto build - test
+demo changes
 #### To run the go server:
 ```
 docker build -t webapp .
@@ -49,3 +50,5 @@ sudo docker exec -it mysql mysql -u root -p
 Start/stop mysql local server:
 sudo service mysql start/stop
 
+"cHECK pipeline"
+"pIPELINE"
