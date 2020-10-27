@@ -1,0 +1,111 @@
+/*
+    This is an example pipeline that implement full CI/CD for a simple static web site packed in a Docker image.
+    The pipeline is made up of 6 main steps
+    1. Git clone and setup
+    2. Build and local tests
+    3. Publish Docker and Helm
+    4. Deploy to dev and test
+    5. Deploy to staging and test
+    6. Optionally deploy to production and test
+ */
+
+
+/*
+    Create the kubernetes namespace
+ */
+def createNamespace (name) {
+    echo "Creating namespace ${name} if needed"
+    sh "kubectl create namespace ${name} --dry-run -o yaml | kubectl apply -f -"
+}
+
+/*
+    Helm install Webapp application
+*/
+def helmDryrunWebapp (webappReleaseName) {
+    echo "Installing webapp application"
+
+    script {
+       // sh "helm repo add helm ${HELM_REPO}; helm repo update"
+       sh "upgrade --dry-run --debug --install ${webappReleaseName} --namespace=api --set image.repository='${image}' database.url='${hostname}',secret.awscred.aws_key=${env.awsKey},secret.awscred.secret_key=${env.awsSecret},secret.regcred.dockerconfigjson=${env.dockerString} --debug ./webapp/"
+    }
+}
+
+/*
+    Helm install Webapp application
+*/
+def helmInstallWebapp (webappReleaseName) {
+    echo "Installing webapp application"
+
+    script {
+       // sh "helm repo add helm ${HELM_REPO}; helm repo update"
+       sh "helm upgrade --install ${webappReleaseName} --namespace=api --set image.repository='${image}' database.url='${hostname}',secret.awscred.aws_key=${env.awsKey},secret.awscred.secret_key=${env.awsSecret},secret.regcred.dockerconfigjson=${env.dockerString} --debug ./webapp/"
+    }
+}
+
+/*
+    Helm install Frontend application
+*/
+def helmFindingWebappIP (webappReleaseName) {
+    echo "Finding IP of Webapp application"
+
+    script {
+       sh "sleep 50"
+       echo "Finding webapp ip"
+       webappIp = sh(returnStdout: true, script: "kubectl describe services webapp --namespace=api | grep elb.amazonaws.com | grep LoadBalancer | awk '{print \$3}' | tr -d '\n'")
+       echo "${webappIp}"
+    }
+}
+
+node {
+     def webappIp
+     def changedFiles
+     def image = "achirashah/webapp-go:webapp"
+     def webappReleaseName = "webapp"
+     def kubernetesCredentials = 'KubeCreds'
+
+    stage('Clone repository') {
+        /* Cloning the Repository to our Workspace */
+        checkout scm
+        sh 'git diff --name-only --diff-filter=ADMR @~..@ > output.txt'
+        changedFiles = readFile 'output.txt'
+        echo "Changed files - ${changedFiles}"
+    }
+
+    stage('Startup activities'){
+        echo "${env.ServerUrl}"
+        withKubeConfig([credentialsId: kubernetesCredentials,
+                        serverUrl: "${env.ServerUrl}"
+                        ]) {
+          sh "kubectl cluster-info"
+        }
+
+
+        // Init helm client
+        sh "helm init"
+    }
+    try {
+        stage ('helm test') {
+            helmDryrunWebapp (webappReleaseName)
+        }
+        stage('Deploy Webapp'){
+            if (changedFiles?.trim().contains("webapp")){
+                echo "Deploying webapp"
+                withKubeConfig([credentialsId: kubernetesCredentials,
+                                 serverUrl: "${env.ServerUrl}"
+                              ]) {
+                       createNamespace('api')
+                       helmInstallWebapp(webappReleaseName)
+                       helmFindingWebappIP (webappReleaseName)
+                }
+
+            }else{
+                echo "Nothing to deploy in webapp"
+            }
+        }
+        catch (Exception err){
+            err_msg = "Test had Exception(${err})"
+            currentBuild.result = 'FAILURE'
+            error "FAILED - Stopping build for Error(${err_msg})"
+        }
+    }
+}
