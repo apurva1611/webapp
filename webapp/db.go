@@ -14,9 +14,9 @@ import (
 var db *sql.DB
 
 const (
-	username = "dbuser"
-	password = "dbpassword"
-	hostname = "webapp-db-instance.c2ghbp35ahfd.us-east-1.rds.amazonaws.com:3306"
+	username = "root"
+	password = "pass1234"
+	hostname = "mysql:3306"
 	dbname   = "webappdb"
 )
 

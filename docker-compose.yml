@@ -42,6 +42,7 @@ services:
     environment:
       kafkaURL: kafka:9092
     restart: always
+    build: .
     ports:
       - "8080:8080"
     depends_on:
@@ -54,6 +55,7 @@ services:
     environment:
       kafkaURL: kafka:9092
     restart: always
+    build: ../../poller/poller
     depends_on:
     - mysql 
     - kafka
@@ -64,6 +66,7 @@ services:
     environment:
       kafkaURL: kafka:9092
     restart: always
+    build: ../../notifier/notifier
     depends_on:
     - mysql 
     - kafka  

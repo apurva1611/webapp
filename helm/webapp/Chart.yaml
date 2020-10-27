@@ -20,14 +20,23 @@ version: 0.1.0
 # This is the version number of the application being deployed. This version number should be
 # incremented each time you make changes to the application. Versions are not expected to
 # follow Semantic Versioning. They should reflect the version the application is using.
+keywords:
+  - kafka
+  - zookeeper
+  - streaming
+  - producer
+  - consumer
+  - poller
+  - notifier
+  - webapp
 sources:
-- https://github.com/Achira-Apurva-Boran/webapp
+  - https://github.com/Achira-Apurva-Boran/webapp
 maintainers:
-- name: AchiraShah
-  email: shah.ac@northeastern.edu
-- name: Boran Yildirim
-  email: yildirim.b@northeastern.edu
-- name: AchiraShah
-  email: shah.ac@northeastern.edu    
+  - name: ApurvaMathur
+    email: mathur.ap@northeastern.edu
+  - name: AchiraShah
+    email: shah.ac@northeastern.edu
+  - name: Boran
+    email: boran@northeastern.edu  
 
 appVersion: 1.16.0

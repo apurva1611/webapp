@@ -9,7 +9,7 @@ spec:
   selector:
     matchLabels:
       {{- include "webapp.selectorLabels" . | nindent 6 }}
-  strategy:
+strategy:
     type: {{ .Values.deployment.type }}
     rollingUpdate:
       maxSurge: 1
@@ -18,7 +18,7 @@ spec:
     metadata:
       labels:
         {{- include "webapp.selectorLabels" . | nindent 8 }}
-    spec:    
+    spec:
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}"
@@ -46,31 +46,31 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.secret.rdscred.name }}-{{ .Release.Name }}
-                  key: password          
+                  key: password
           ports:
             - name: http
               containerPort: 8080
               protocol: TCP
           livenessProbe:
             httpGet:
-              path: /healthcheck
+              path: v1/healthcheck
               port: 8080
               scheme: HTTP
             initialDelaySeconds: 20
             periodSeconds: 20
           readinessProbe:
             httpGet:
-              path: /healthcheck
+              path: v1/healthcheck
               port: 8080
               scheme: HTTP
             initialDelaySeconds: 20
             periodSeconds: 20
           resources:
             requests:
-              memory: "500Mi"
-              cpu: 1
+              memory: "250Mi"
+              cpu: 250m
             limits:
-              memory: "1000Mi"
-              cpu: 1
+              memory: "500Mi"
+              cpu: 500m
       imagePullSecrets:
         - name: {{ .Values.secret.regcred.name }}-{{ .Release.Name }}
