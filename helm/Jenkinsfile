@@ -61,9 +61,10 @@ node {
      def changedFiles
      def image
      def webappReleaseName
-     def kubernetesCredentials = 'kubecred'
+     def kubernetesCredentials = 'cluster.dev.achirashah.com'
      def hostname
-     def dockerconfigjson
+     def dockerconfigjson = 'https://api.cluster.dev.achirashah.com'
+     def serverUrl = 
 
     stage('Clone repository') {
         /* Cloning the Repository to our Workspace */
@@ -78,7 +79,9 @@ node {
         withKubeConfig([credentialsId: kubernetesCredentials,
                         serverUrl: "${env.ServerUrl}"
                         ]) {
-          sh "kubectl cluster-info"
+            sh 'echo $KUBECONFIG'
+            sh 'cat $(echo $KUBECONFIG | tr -d "[:space:]")'                      
+            sh "kubectl cluster-info"
         }
 
 
