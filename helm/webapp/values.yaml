@@ -55,7 +55,6 @@ dependencies:
 configmap:
   name: env-config
   RDS_DB_NAME: webappdb
-  S3_BUCKET_NAME: mywebappbucket
   REGION: us-east-1 
   RDS_CONNECTION_STRING:  
 
@@ -64,11 +63,6 @@ secret:
     name: regcred
     type: kubernetes.io/dockerconfigjson
     dockerconfigjson: 
-  ## awscred:
-  ##   name: awscred
-  ##   type: Opaque
-  ##   aws_key: 
-  ##   secret_key: 
   rdscred:
     name: rdscred
     type: Opaque

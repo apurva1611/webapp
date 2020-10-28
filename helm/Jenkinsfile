@@ -38,7 +38,7 @@ def helmInstallWebapp (webappReleaseName) {
 
     script {
        // sh "helm repo add helm ${HELM_REPO}; helm repo update"
-       sh "helm upgrade --install ${webappReleaseName} --namespace=api --set image.repository='${image}' database.url='${hostname}',secret.awscred.aws_key=${env.awsKey},secret.awscred.secret_key=${env.awsSecret},secret.regcred.dockerconfigjson=${env.dockerString} --debug ./webapp/"
+       sh "helm upgrade --install ${webappReleaseName} --namespace=api --set image.repository='${image}' database.url='${hostname}',secret.regcred.dockerconfigjson=${env.dockerString} --debug ./webapp/"
     }
 }
 
@@ -59,11 +59,11 @@ def helmFindingWebappIP (webappReleaseName) {
 node {
      def webappIp
      def changedFiles
-     def image = "achirashah/webapp-go:webapp"
-     def webappReleaseName = "webapp"
-     def kubernetesCredentials = 'KubeCreds'
-     def hostname = ''
-     def dockerconfigjson = ''
+     def image
+     def webappReleaseName
+     def kubernetesCredentials
+     def hostname
+     def dockerconfigjson
 
     stage('Clone repository') {
         /* Cloning the Repository to our Workspace */
