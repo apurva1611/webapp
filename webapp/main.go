@@ -28,7 +28,7 @@ func SetupRouter() *gin.Engine {
 	authorized.Use(AuthMW(secret))
 	{
 		authorized.PUT("", UpdateUserSelf)
-		v1.GET("/healthcheck", healthcheck)
+		v1.GET("/healthcheck", healthCheck)
 		v1.POST("/user", CreateUser)
 		// user/:id includes user/self, so routing is handled in GetUserWithId
 		v1.GET("/user/:id", GetUserWithID, AuthMW(secret), GetUserSelf)
@@ -53,7 +53,19 @@ func SetupRouter() *gin.Engine {
 
 	return router
 }
-func healthcheck(c *gin.Context) {
+func healthCheck(c *gin.Context) {
+	err := dbHealthCheck()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, "db health check failed.")
+		return
+	}
+
+	err = kafkaHealthCheck(kafkaURL)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, "kafka health check failed.")
+		return
+	}
+
 	c.JSON(http.StatusOK, "ok")
 }
 

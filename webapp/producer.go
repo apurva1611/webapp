@@ -8,6 +8,16 @@ import (
 	"github.com/segmentio/kafka-go"
 )
 
+func kafkaHealthCheck(kafkaURL string) error {
+	conn, err := kafka.Dial("tcp", kafkaURL)
+	if err != nil {
+		return err
+	}
+
+	conn.Close()
+	return nil
+}
+
 func newKafkaWriter(kafkaURL, topic string) *kafka.Writer {
 	return kafka.NewWriter(kafka.WriterConfig{
 		Brokers:  []string{kafkaURL},
