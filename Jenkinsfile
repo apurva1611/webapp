@@ -1,7 +1,7 @@
 node {
 
-    def registry = "achirashah/webapp-go" 
-    def registryCredential = 'achirashah'
+    def registry = '' 
+    def registryCredential = ''
     def commit_id = ''
 	def dockerImage = ''
 

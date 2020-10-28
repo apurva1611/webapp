@@ -11,7 +11,7 @@ import (
 )
 
 func CreateWatch(c *gin.Context) {
-	kafkaURL := os.Getenv("kafkaURL")
+	kafkaURL := "kafka:9092"
 	produceTopic := "watch"
 
 	watch := WATCH{}

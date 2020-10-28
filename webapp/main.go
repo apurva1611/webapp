@@ -120,6 +120,8 @@ func UpdateUserSelf(c *gin.Context) {
 func CreateUser(c *gin.Context) {
 	user := User{}
 
+	producetest("kafka:9092", "watch", "key", "myfirstmessage")
+
 	if c.ShouldBindJSON(&user) == nil {
 		// if username is not a valid email respond 400
 		if !IsEmailValid(user.Username) {

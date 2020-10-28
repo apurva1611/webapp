@@ -9,7 +9,7 @@ namespace:
 - api
 
 image:
-  repository: achirashah/webapp-go:dev5
+  repository: achirashah/webapp-go:dev9
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
@@ -56,23 +56,24 @@ configmap:
   name: env-config
   RDS_DB_NAME: webappdb
   S3_BUCKET_NAME: mywebappbucket
-  REGION: us-east-1  
+  REGION: us-east-1 
+  RDS_CONNECTION_STRING:  
 
 secret:
   regcred:
     name: regcred
     type: kubernetes.io/dockerconfigjson
-    dockerconfigjson: ewogICAgImF1dGhzIjogewogICAgICAgICJodHRwczovL2luZGV4LmRvY2tlci5pby92MS8iOiB7CiAgICAgICAgICAgICJhdXRoIjogIllXTm9hWEpoYzJoaGFEcEJZMmhwY21FeU1EQT0iCiAgICAgICAgfSwKICAgICAgICAiSHR0cEhlYWRlcnMiOiB7CiAgICAgICAgICAgICJVc2VyLUFnZW50IjogIkRvY2tlci1DbGllbnQvMTkuMDMuMTMgKGRhcndpbikiCiAgICAgICAgfQogICAgfQp9
-  awscred:
-    name: awscred
-    type: Opaque
-    aws_key: AKIAZQ2HYOLQYKQBRZGK
-    secret_key: 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
+    dockerconfigjson: 
+  ## awscred:
+  ##   name: awscred
+  ##   type: Opaque
+  ##   aws_key: 
+  ##   secret_key: 
   rdscred:
     name: rdscred
     type: Opaque
     username: root
-    password: pass1234  
+    password: pass1234   
 
 ingress:
   enabled: false

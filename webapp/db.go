@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"os"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -16,11 +17,13 @@ var db *sql.DB
 const (
 	username = "root"
 	password = "pass1234"
-	hostname = "mysql:3306"
+	port     = ":3306"
 	dbname   = "webappdb"
 )
 
 func dsn() string {
+	rdsurl := os.Getenv("rdsurl")
+	hostname := rdsurl + port
 	return fmt.Sprintf("%s:%s@tcp(%s)/%s", username, password, hostname, dbname)
 }
 

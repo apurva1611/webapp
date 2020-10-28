@@ -29,3 +29,16 @@ func produce(kafkaURL, topic string, watch WATCH, msgKey string) {
 		fmt.Println(err)
 	}
 }
+
+func producetest(kafkaURL, topic string, watch string, msgKey string) {
+	writer := newKafkaWriter(kafkaURL, topic)
+	msg := kafka.Message{
+		Key:   []byte(msgKey),
+		Value: []byte(watch),
+	}
+
+	err := writer.WriteMessages(context.Background(), msg)
+	if err != nil {
+		fmt.Println(err)
+	}
+}
