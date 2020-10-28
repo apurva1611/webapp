@@ -40,6 +40,14 @@ func closeDB() {
 	db.Close()
 }
 
+func dbHealthCheck() error {
+	err := db.Ping()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func createDb() {
 	openDB()
 
