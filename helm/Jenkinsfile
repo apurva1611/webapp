@@ -61,7 +61,7 @@ node {
      def changedFiles
      def image
      def webappReleaseName
-     def kubernetesCredentials
+     def kubernetesCredentials = 'kubecred'
      def hostname
      def dockerconfigjson
 
