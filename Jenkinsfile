@@ -1,9 +1,9 @@
 node {
 
-    def registry = '' 
-    def registryCredential = ''
-    def commit_id = ''
-	def dockerImage = ''
+    def registry 
+    def registryCredential
+    def commit_id 
+	def dockerImage 
 
     //agent { dockerfile true }
 	stage('Clone repository') {
