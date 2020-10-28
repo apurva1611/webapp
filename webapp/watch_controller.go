@@ -3,15 +3,15 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
 
+const kafkaURL = "kafka:9092"
+
 func CreateWatch(c *gin.Context) {
-	kafkaURL := "kafka:9092"
 	produceTopic := "watch"
 
 	watch := WATCH{}
@@ -195,7 +195,6 @@ func UpdateWatchById(c *gin.Context) {
 			}
 		}
 
-		kafkaURL := os.Getenv("kafkaURL")
 		produceTopic := "watch"
 		fmt.Printf("SENDING updated watch to watch topic:\n %+v", updatedWatch)
 		produce(kafkaURL, produceTopic, updatedWatch, "update")
@@ -242,7 +241,6 @@ func DeleteWatch(c *gin.Context) {
 		return
 	}
 
-	kafkaURL := os.Getenv("kafkaURL")
 	produceTopic := "watch"
 	fmt.Printf("SENDING watch to delete on watch topic:\n %+v", watch)
 	produce(kafkaURL, produceTopic, *watch, "delete")
