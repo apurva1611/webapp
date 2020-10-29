@@ -72,7 +72,7 @@ node {
 
         sh "export aws_access_key_id=${env.awsKey}"
         sh "export aws_secret_access_key=${env.awsSecret}"
-        sh "export state_store=${env.S3BucketName}"
+        sh "export --state=${env.S3BucketName}"
         sh "kops export kubecfg ${env.YOUR_CLUSTER_NAME}"
     }
 
