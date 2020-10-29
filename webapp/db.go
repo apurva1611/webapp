@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"os"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -14,13 +15,15 @@ import (
 var db *sql.DB
 
 const (
-	username = "dbuser"
-	password = "dbpassword"
-	hostname = "webapp-db-instance.c2ghbp35ahfd.us-east-1.rds.amazonaws.com:3306"
+	username = "root"
+	password = "pass1234"
+	port     = ":3306"
 	dbname   = "webappdb"
 )
 
 func dsn() string {
+	rdsurl := os.Getenv("rdsurl")
+	hostname := rdsurl + port
 	return fmt.Sprintf("%s:%s@tcp(%s)/%s", username, password, hostname, dbname)
 }
 
@@ -35,6 +38,14 @@ func openDB() {
 
 func closeDB() {
 	db.Close()
+}
+
+func dbHealthCheck() error {
+	err := db.Ping()
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func createDb() {

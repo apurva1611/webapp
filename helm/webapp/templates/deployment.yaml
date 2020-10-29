@@ -27,48 +27,40 @@ spec:
             - configMapRef:
                 name: {{ .Values.configmap.name }}-{{ .Release.Name }}
           env:
-            - name: AWS_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.secret.awscred.name }}-{{ .Release.Name }}
-                  key: aws_key
-            - name: SECRET_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.secret.awscred.name }}-{{ .Release.Name }}
-                  key: secret_key
             - name: RDS_USER_NAME
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.secret.rdscred.name }}-{{ .Release.Name }}
+                  name: {{ .Values.secret.rdscred.username }}-{{ .Release.Name }}
                   key: username
             - name: RDS_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.secret.rdscred.name }}-{{ .Release.Name }}
-                  key: password          
+                  key: password                
           ports:
             - name: http
               containerPort: 8080
               protocol: TCP
           livenessProbe:
             httpGet:
-              path: /
-              port: http
+              path: /v1/healthcheck
+              port: 8080
+              scheme: HTTP
             initialDelaySeconds: 20
             periodSeconds: 20
           readinessProbe:
             httpGet:
-              path: /
-              port: http
+              path: /v1/healthcheck
+              port: 8080
+              scheme: HTTP
             initialDelaySeconds: 20
             periodSeconds: 20
           resources:
             requests:
-              memory: "500Mi"
-              cpu: 1
+              memory: "250Mi"
+              cpu: 250m
             limits:
-              memory: "1000Mi"
-              cpu: 1
+              memory: "500Mi"
+              cpu: 500m
       imagePullSecrets:
         - name: {{ .Values.secret.regcred.name }}-{{ .Release.Name }}

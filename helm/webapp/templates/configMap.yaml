@@ -7,4 +7,5 @@ metadata:
 data:
   S3_BUCKET_NAME: {{ .Values.configmap.S3_BUCKET_NAME }}
   REGION: {{ .Values.configmap.REGION }}
+  RDS_CONNECTION_STRING: {{ .Values.configmap.RDS_CONNECTION_STRING }}
   

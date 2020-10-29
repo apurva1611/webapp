@@ -8,6 +8,16 @@ import (
 	"github.com/segmentio/kafka-go"
 )
 
+func kafkaHealthCheck(kafkaURL string) error {
+	conn, err := kafka.Dial("tcp", kafkaURL)
+	if err != nil {
+		return err
+	}
+
+	conn.Close()
+	return nil
+}
+
 func newKafkaWriter(kafkaURL, topic string) *kafka.Writer {
 	return kafka.NewWriter(kafka.WriterConfig{
 		Brokers:  []string{kafkaURL},
@@ -22,6 +32,19 @@ func produce(kafkaURL, topic string, watch WATCH, msgKey string) {
 	msg := kafka.Message{
 		Key:   []byte(msgKey),
 		Value: watchJSON,
+	}
+
+	err := writer.WriteMessages(context.Background(), msg)
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+
+func producetest(kafkaURL, topic string, watch string, msgKey string) {
+	writer := newKafkaWriter(kafkaURL, topic)
+	msg := kafka.Message{
+		Key:   []byte(msgKey),
+		Value: []byte(watch),
 	}
 
 	err := writer.WriteMessages(context.Background(), msg)
