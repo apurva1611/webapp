@@ -70,9 +70,9 @@ node {
         changedFiles = readFile 'output.txt'
         echo "Changed files - ${changedFiles}"
 
-        sh 'export aws_access_key_id="${env.awsKey}"'
-        sh 'export aws_secret_access_key="${env.awsSecret}"'
-        sh 'kops export kubecfg "${env.YOUR_CLUSTER_NAME}"'
+        sh "export aws_access_key_id=${env.awsKey}"
+        sh "export aws_secret_access_key=${env.awsSecret}"
+        sh "kops export kubecfg ${env.YOUR_CLUSTER_NAME}"
     }
 
     stage('Startup activities'){
