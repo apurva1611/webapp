@@ -72,8 +72,8 @@ node {
 
         sh "export aws_access_key_id=${env.awsKey}"
         sh "export aws_secret_access_key=${env.awsSecret}"
-        sh "--state=${env.S3BucketName}"
-        sh "kops export kubecfg ${env.YOUR_CLUSTER_NAME}"
+        sh "export KOPS_STATE_STORE=${env.S3BucketName}"
+        sh "kops export kubecfg ${env.YOUR_CLUSTER_NAME} --state=$KOPS_STATE_STORE"
     }
 
     stage('Startup activities'){
