@@ -1,7 +1,7 @@
 node {
 
-    def registry 
-    def registryCredential
+    def registryCredential = 'DockerHub'
+	def githubCredential = 'GitHub'
     def commit_id
 	def dockerImage
 
@@ -15,7 +15,7 @@ node {
 		* docker build on the command line */
         commit_id = sh(returnStdout: true, script: 'git rev-parse HEAD')
   		echo "$commit_id"
-        dockerImage = docker.build registry
+        dockerImage = docker.build ("${env.registry}")
 
 	}
 	stage('Tag and Register image') {
