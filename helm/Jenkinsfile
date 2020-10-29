@@ -26,7 +26,7 @@ def helmDryrunWebapp (webappReleaseName) {
 
     script {
        // sh "helm repo add helm ${HELM_REPO}; helm repo update"
-       sh "upgrade --dry-run --debug --install ${webappReleaseName} --namespace=api --set image.repository='${image}' database.url='${hostname}',secret.awscred.aws_key=${env.awsKey},secret.awscred.secret_key=${env.awsSecret},secret.regcred.dockerconfigjson=${env.dockerString} --debug ./webapp/"
+       sh "upgrade --dry-run --debug --install ${webappReleaseName} --namespace=api --set image.repository='${image}',secret.regcred.dockerconfigjson=${env.dockerString},database.url='${hostname}',secret.awscred.aws_key=${env.awsKey},secret.awscred.secret_key=${env.awsSecret},configmap.S3_BUCKET_NAME=${env.S3BucketName} --debug ./webapp/"
     }
 }
 
@@ -38,7 +38,7 @@ def helmInstallWebapp (webappReleaseName) {
 
     script {
        // sh "helm repo add helm ${HELM_REPO}; helm repo update"
-       sh "helm upgrade --install ${webappReleaseName} --namespace=api --set image.repository='${image}' database.url='${hostname}',secret.awscred.aws_key=${env.awsKey},secret.awscred.secret_key=${env.awsSecret},secret.regcred.dockerconfigjson=${env.dockerString} --debug ./webapp/"
+       sh "helm upgrade --install ${webappReleaseName} --namespace=api --set image.repository='${image}',secret.regcred.dockerconfigjson=${env.dockerString},database.url='${hostname}',secret.awscred.aws_key=${env.awsKey},secret.awscred.secret_key=${env.awsSecret},configmap.S3_BUCKET_NAME=${env.S3BucketName} --debug ./webapp/"
     }
 }
 
@@ -59,12 +59,9 @@ def helmFindingWebappIP (webappReleaseName) {
 node {
      def webappIp
      def changedFiles
-     def image
-     def webappReleaseName
-     def kubernetesCredentials = 'cluster.dev.achirashah.com'
-     def hostname
-     def dockerconfigjson = 'https://api.cluster.dev.achirashah.com'
-     def serverUrl = 
+     def webappReleaseName = "webapp"
+     def kubernetesCredentials = 'KubeCreds'
+
 
     stage('Clone repository') {
         /* Cloning the Repository to our Workspace */
