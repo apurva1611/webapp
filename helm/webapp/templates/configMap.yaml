@@ -6,5 +6,5 @@ metadata:
     {{- include "webapp.labels" . | nindent 4 }}
 data:
   REGION: {{ .Values.configmap.REGION }}
-  RDS_CONNECTION_STRING: {{ .Values.configmap.RDS_CONNECTION_STRING }}
+  rdsurl: {{ .Values.configmap.rdsurl }}
   

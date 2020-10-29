@@ -53,16 +53,23 @@ func SetupRouter() *gin.Engine {
 
 	return router
 }
+
+// func healthCheck(c *gin.Context) {
+// 	c.JSON(http.StatusOK, "ok")
+// }
+
 func healthCheck(c *gin.Context) {
 	err := dbHealthCheck()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, "db health check failed.")
+		//os.Exit(1)
 		return
 	}
 
 	err = kafkaHealthCheck(kafkaURL)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, "kafka health check failed.")
+		//os.Exit(2)
 		return
 	}
 

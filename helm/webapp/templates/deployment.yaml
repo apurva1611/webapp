@@ -30,7 +30,7 @@ spec:
             - name: RDS_USER_NAME
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.secret.rdscred.username }}-{{ .Release.Name }}
+                  name: {{ .Values.secret.rdscred.name }}-{{ .Release.Name }}
                   key: username
             - name: RDS_PASSWORD
               valueFrom:

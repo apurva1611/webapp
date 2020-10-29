@@ -9,7 +9,7 @@ namespace:
 - api
 
 image:
-  repository: achirashah/webapp-go:dev9
+  repository: achirashah/webapp:dev1
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
@@ -56,13 +56,13 @@ configmap:
   name: env-config
   RDS_DB_NAME: webappdb
   REGION: us-east-1 
-  RDS_CONNECTION_STRING:  
+  rdsurl: webapp-db-instance.c2ghbp35ahfd.us-east-1.rds.amazonaws.com 
 
 secret:
   regcred:
     name: regcred
     type: kubernetes.io/dockerconfigjson
-    dockerconfigjson: 
+    dockerconfigjson: ewogICAgImF1dGhzIjogewogICAgICAgICJodHRwczovL2luZGV4LmRvY2tlci5pby92MS8iOiB7CiAgICAgICAgICAgICJhdXRoIjogIllXTm9hWEpoYzJoaGFEcEJZMmhwY21FeU1EQT0iCiAgICAgICAgfSwKICAgICAgICAiSHR0cEhlYWRlcnMiOiB7CiAgICAgICAgICAgICJVc2VyLUFnZW50IjogIkRvY2tlci1DbGllbnQvMTkuMDMuMTMgKGRhcndpbikiCiAgICAgICAgfQogICAgfQp9
   rdscred:
     name: rdscred
     type: Opaque
