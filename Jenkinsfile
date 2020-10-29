@@ -2,8 +2,8 @@ node {
 
     def registry = "achirashah/webapp" 
     def registryCredential = 'achirashah'
-    def commit_id = 
-	def dockerImage = 
+    def commit_id
+	def dockerImage
 
     //agent { dockerfile true }
 	stage('Clone repository') {
