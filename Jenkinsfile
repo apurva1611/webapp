@@ -1,7 +1,7 @@
 node {
 
-    def registry = " " 
-    def registryCredential = ' '
+    def registry 
+    def registryCredential
     def commit_id
 	def dockerImage
 
