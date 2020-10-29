@@ -60,7 +60,7 @@ node {
      def webappIp
      def changedFiles
      def webappReleaseName = "webapp"
-     def kubernetesCredentials
+     def kubernetesCredentials = "dev-user"
 
 
     stage('Clone repository') {
