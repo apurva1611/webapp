@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.configmap.name }}-{{ .Release.Name }}
+  labels:
+    {{- include "webapp.labels" . | nindent 4 }}
+data:
+  REGION: {{ .Values.configmap.REGION }}
+  rdsurl: {{ .Values.configmap.rdsurl }}
+  
