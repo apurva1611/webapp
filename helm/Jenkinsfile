@@ -75,8 +75,7 @@ node {
         sh "export aws_profile=${env.aws_profile}"
         sh "export aws_region=${env.aws_region}"
         sh "export KOPS_STATE_STORE=${env.S3BucketName}"
-        sh "AWS_PROFILE=${env.aws_profile} AWS_ACCESS_KEY_ID=${env.awsKey} AWS_SECRET_ACCESS_KEY=${env.awsSecret} kops get ig"
-        sh "kops export kubecfg ${env.YOUR_CLUSTER_NAME} --state=${env.S3BucketName}"
+        sh "AWS_PROFILE=${env.aws_profile} AWS_ACCESS_KEY_ID=${env.awsKey} AWS_SECRET_ACCESS_KEY=${env.awsSecret} kops export kubecfg ${env.YOUR_CLUSTER_NAME} --state=${env.S3BucketName}"
     }
 
     stage('Startup activities'){
