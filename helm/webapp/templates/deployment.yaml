@@ -18,7 +18,7 @@ spec:
     metadata:
       labels:
         {{- include "webapp.selectorLabels" . | nindent 8 }}
-    spec:    
+    spec:
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}"
@@ -27,6 +27,16 @@ spec:
             - configMapRef:
                 name: {{ .Values.configmap.name }}-{{ .Release.Name }}
           env:
+            - name: AWS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secret.awscred.name }}-{{ .Release.Name }}
+                  key: aws_key
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secret.awscred.name }}-{{ .Release.Name }}
+                  key: secret_key
             - name: RDS_USER_NAME
               valueFrom:
                 secretKeyRef:
@@ -36,7 +46,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.secret.rdscred.name }}-{{ .Release.Name }}
-                  key: password                
+                  key: password
           ports:
             - name: http
               containerPort: 8080
