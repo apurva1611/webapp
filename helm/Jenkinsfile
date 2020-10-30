@@ -21,14 +21,6 @@ def createNamespace (name) {
 /*
     Helm install Webapp application
 */
-def helmDryrunWebapp (webappReleaseName) {
-    echo "Installing webapp application"
-
-    script {
-       // sh "helm repo add helm ${HELM_REPO}; helm repo update"
-       sh "/usr/sbin/helm upgrade --dry-run --debug --install ${webappReleaseName} --namespace=api --set image.repository='${image}',secret.regcred.dockerconfigjson=${env.dockerString},database.url='${hostname}',secret.awscred.aws_key=${env.awsKey},secret.awscred.secret_key=${env.awsSecret},configmap.S3_BUCKET_NAME=${env.S3BucketName} --debug ./helm/webapp/"
-    }
-}
 
 /*
     Helm install Webapp application
