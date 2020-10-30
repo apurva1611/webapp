@@ -1,9 +1,9 @@
 node {
 
-    def registry 
-    def registryCredential
-    def commit_id 
-	def dockerImage 
+    def registryCredential = 'DockerHub'
+	def githubCredential = 'GitHub'
+    def commit_id
+	def dockerImage
 
     //agent { dockerfile true }
 	stage('Clone repository') {
@@ -15,7 +15,7 @@ node {
 		* docker build on the command line */
         commit_id = sh(returnStdout: true, script: 'git rev-parse HEAD')
   		echo "$commit_id"
-        dockerImage = docker.build registry
+        dockerImage = docker.build ("${env.registry}")
 
 	}
 	stage('Tag and Register image') {
