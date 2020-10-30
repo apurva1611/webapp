@@ -68,9 +68,6 @@ node {
     }
 
      try {
-        stage ('helm test') {
-            helmDryrunWebapp (webappReleaseName)
-        }
         stage('Deploy Webapp'){
             createNamespace('api')
             helmInstallWebapp(webappReleaseName)
