@@ -26,7 +26,7 @@ def helmDryrunWebapp (webappReleaseName) {
 
     script {
        // sh "helm repo add helm ${HELM_REPO}; helm repo update"
-       sh "upgrade --dry-run --debug --install ${webappReleaseName} --namespace=api --set image.repository='${image}',secret.regcred.dockerconfigjson=${env.dockerString},database.url='${hostname}',secret.awscred.aws_key=${env.awsKey},secret.awscred.secret_key=${env.awsSecret},configmap.S3_BUCKET_NAME=${env.S3BucketName} --debug ./webapp/"
+       sh "/usr/local/bin/helm upgrade --dry-run --debug --install ${webappReleaseName} --namespace=api --set image.repository='${image}',secret.regcred.dockerconfigjson=${env.dockerString},database.url='${hostname}',secret.awscred.aws_key=${env.awsKey},secret.awscred.secret_key=${env.awsSecret},configmap.S3_BUCKET_NAME=${env.S3BucketName} --debug ./webapp/"
     }
 }
 
@@ -38,7 +38,7 @@ def helmInstallWebapp (webappReleaseName) {
 
     script {
        // sh "helm repo add helm ${HELM_REPO}; helm repo update"
-       sh "helm upgrade --install ${webappReleaseName} --namespace=api --set image.repository='${image}',secret.regcred.dockerconfigjson=${env.dockerString},database.url='${hostname}',secret.awscred.aws_key=${env.awsKey},secret.awscred.secret_key=${env.awsSecret},configmap.S3_BUCKET_NAME=${env.S3BucketName} --debug ./webapp/"
+       sh "/usr/local/bin/helm upgrade --install ${webappReleaseName} --namespace=api --set image.repository='${image}',secret.regcred.dockerconfigjson=${env.dockerString},database.url='${hostname}',secret.awscred.aws_key=${env.awsKey},secret.awscred.secret_key=${env.awsSecret},configmap.S3_BUCKET_NAME=${env.S3BucketName} --debug ./webapp/"
     }
 }
 
@@ -60,15 +60,13 @@ node {
      def webappIp
      def changedFiles
      def webappReleaseName = "webapp"
-     def kubernetesCredentials 
+     def kubernetesCredentials = "kubeCred"
 
 
     stage('Clone repository') {
         /* Cloning the Repository to our Workspace */
         checkout scm
-        sh 'git diff --name-only --diff-filter=ADMR @~..@ > output.txt'
-        changedFiles = readFile 'output.txt'
-        echo "Changed files - ${changedFiles}"
+        
 
         sh "export aws_access_key_id=${env.awsKey}"
         sh "export aws_secret_access_key=${env.awsSecret}"
@@ -76,45 +74,23 @@ node {
         sh "export aws_region=${env.aws_region}"
         sh "export KOPS_STATE_STORE=${env.S3BucketName}"
         sh "AWS_PROFILE=${env.aws_profile} AWS_ACCESS_KEY_ID=${env.awsKey} AWS_SECRET_ACCESS_KEY=${env.awsSecret} kops export kubecfg ${env.YOUR_CLUSTER_NAME} --state=${env.S3BucketName}"
-    }
-
-    stage('Startup activities'){
         echo "${env.ServerUrl}"
-        withKubeConfig([credentialsId: kubernetesCredentials,
-                        serverUrl: "${env.ServerUrl}"
-                        ]) {
-            sh 'echo $KUBECONFIG'
-            sh 'cat $(echo $KUBECONFIG | tr -d "[:space:]")'                      
-            sh "kubectl cluster-info"
-        }
-
-
-        // Init helm client
-        sh "helm init"
     }
-    try {
+
+     try {
         stage ('helm test') {
             helmDryrunWebapp (webappReleaseName)
         }
         stage('Deploy Webapp'){
-            if (changedFiles?.trim().contains("webapp")){
-                echo "Deploying webapp"
-                withKubeConfig([credentialsId: kubernetesCredentials,
-                                 serverUrl: "${env.ServerUrl}"
-                              ]) {
-                       createNamespace('api')
-                       helmInstallWebapp(webappReleaseName)
-                       helmFindingWebappIP (webappReleaseName)
-                }
-
-            }else{
-                echo "Nothing to deploy in webapp"
-            }
+            createNamespace('api')
+            helmInstallWebapp(webappReleaseName)
+            helmFindingWebappIP (webappReleaseName)
         }
+
     }
     catch (Exception err){
             err_msg = "Test had Exception(${err})"
             currentBuild.result = 'FAILURE'
             error "FAILED - Stopping build for Error(${err_msg})"
-        }
+    }
 }
