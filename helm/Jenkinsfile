@@ -43,7 +43,7 @@ def helmInstallWebapp (webappReleaseName) {
 }
 
 /*
-    Helm install Frontend application
+    Helm install webapp application
 */
 def helmFindingWebappIP (webappReleaseName) {
     echo "Finding IP of Webapp application"
@@ -58,9 +58,7 @@ def helmFindingWebappIP (webappReleaseName) {
 
 node {
      def webappIp
-     def changedFiles
      def webappReleaseName = "webapp"
-     def kubernetesCredentials = "kubeCred"
 
 
     stage('Clone repository') {
