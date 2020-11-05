@@ -1,5 +1,5 @@
 # webapp
-demo changes
+demo changes for assignment6
 #### To run the go server:
 ```
 docker build -t webapp .
