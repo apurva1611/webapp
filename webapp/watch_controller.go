@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 
@@ -12,6 +13,8 @@ import (
 const kafkaURL = "kafka:9092"
 
 func CreateWatch(c *gin.Context) {
+	log.Print("/watch POST Create")
+
 	produceTopic := "watch"
 
 	watch := WATCH{}
@@ -87,6 +90,8 @@ func CreateWatch(c *gin.Context) {
 }
 
 func GetAllWatches(c *gin.Context) {
+	log.Print("/watches GET All watches")
+
 	authHeader := c.Request.Header.Get("Authorization")
 	fmt.Printf(authHeader)
 	id, err := ParseToken(authHeader)
@@ -108,6 +113,8 @@ func GetAllWatches(c *gin.Context) {
 }
 
 func GetWatchById(c *gin.Context) {
+	log.Print("/watch/:id GET Watch")
+
 	authHeader := c.Request.Header.Get("Authorization")
 	fmt.Printf(authHeader)
 	id, err := ParseToken(authHeader)
@@ -137,6 +144,8 @@ func GetWatchById(c *gin.Context) {
 }
 
 func UpdateWatchById(c *gin.Context) {
+	log.Print("/watch/:id PUT Update")
+
 	authHeader := c.Request.Header.Get("Authorization")
 	fmt.Printf(authHeader)
 	id, err := ParseToken(authHeader)
@@ -206,6 +215,7 @@ func UpdateWatchById(c *gin.Context) {
 }
 
 func DeleteWatch(c *gin.Context) {
+	log.Print("/watch/:id DELETE Delete")
 	authHeader := c.Request.Header.Get("Authorization")
 	fmt.Printf(authHeader)
 	id, err := ParseToken(authHeader)

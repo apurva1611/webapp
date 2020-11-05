@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 
 	"github.com/segmentio/kafka-go"
 )
@@ -38,6 +39,8 @@ func produce(kafkaURL, topic string, watch WATCH, msgKey string) {
 	if err != nil {
 		fmt.Println(err)
 	}
+
+	log.Printf("PRODUCE Topic: %s, Message ID %s", topic, string(msg.Key))
 }
 
 func producetest(kafkaURL, topic string, watch string, msgKey string) {

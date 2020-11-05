@@ -42,7 +42,7 @@ func (p *Prometheus) HandlerFunc() gin.HandlerFunc {
 
 		url := p.ReqCntURLLabelMappingFn(c)
 
-		// jlambert Oct 2018 - sidecar specific mod
+		// jlambert Oct 		2018 - sidecar specific mod
 		if len(p.URLLabelFromContext) > 0 {
 			u, found := c.Get(p.URLLabelFromContext)
 			if !found {
