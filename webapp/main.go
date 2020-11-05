@@ -27,8 +27,10 @@ func main() {
 func SetupRouter() *gin.Engine {
 	router := gin.Default()
 
-	p := newPrometheus("http")
-	p.use(router)
+	p := newPrometheus("gin")
+	p.Use(router)
+	// registry := prometheus.NewRegistry()
+	// registry.Register(requestsPerMinute)
 
 	v1 := router.Group("/v1")
 	authorized := v1.Group("/user/self")
