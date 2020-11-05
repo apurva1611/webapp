@@ -65,12 +65,14 @@ func SetupRouter() *gin.Engine {
 func healthCheck(c *gin.Context) {
 	err := dbHealthCheck()
 	if err != nil {
+		log.Printf("DB HEALTHCHECK %s", err.Error())
 		c.JSON(http.StatusInternalServerError, "db health check failed.")
 		os.Exit(1)
 	}
 
 	err = kafkaHealthCheck(kafkaURL)
 	if err != nil {
+		log.Printf("KAFKA HEALTHCHECK %s", err.Error())
 		c.JSON(http.StatusInternalServerError, "kafka health check failed.")
 		os.Exit(2)
 	}
@@ -80,6 +82,8 @@ func healthCheck(c *gin.Context) {
 
 // GetUserSelf function gets User from db
 func GetUserSelf(c *gin.Context) {
+	log.Print("/user/self GET Self")
+
 	// get Authorization header "Bearer <token>"
 	authHeader := c.Request.Header.Get("Authorization")
 
@@ -100,6 +104,7 @@ func GetUserSelf(c *gin.Context) {
 
 // UpdateUserSelf function gets updates User from db
 func UpdateUserSelf(c *gin.Context) {
+	log.Print("/user/self PUT update")
 	authHeader := c.Request.Header.Get("Authorization")
 	fmt.Printf(authHeader)
 	id, err := ParseToken(authHeader)
@@ -139,6 +144,8 @@ func UpdateUserSelf(c *gin.Context) {
 
 // CreateUser function gets User from db
 func CreateUser(c *gin.Context) {
+	log.Print("/user POST Create")
+
 	user := User{}
 
 	producetest("kafka:9092", "watch", "key", "myfirstmessage")
@@ -199,6 +206,8 @@ func GetUserWithID(c *gin.Context) {
 
 	// prevent calling other handlers AuthMW and GetUserSelf
 	c.Abort()
+
+	log.Print("/user/:id GET User")
 
 	user := queryByID(id)
 
