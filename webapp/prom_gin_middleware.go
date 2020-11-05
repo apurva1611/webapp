@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -15,6 +16,7 @@ func (p *Prometheus) use(e *gin.Engine) {
 
 func (p *Prometheus) handlerFunc() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		log.Printf("Prometheus call")
 		if c.Request.URL.String() == p.MetricsPath {
 			c.Next()
 			return
