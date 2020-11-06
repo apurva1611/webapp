@@ -46,3 +46,7 @@ It returns user data with \<user-id>.
 sudo docker exec -it mysql mysql -u root -p
 "cHECK pipeline"
 "pIPELINE"
+
+Refrence for prometheus
+https://github.com/zsais/go-gin-prometheus/blob/master/middleware.go
+https://github.com/prometheus/client_golang/tree/master/prometheus
