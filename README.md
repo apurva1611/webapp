@@ -50,3 +50,7 @@ sudo service mysql start/stop
 
 "cHECK pipeline"
 "pIPELINE"
+
+Refrence for prometheus
+https://github.com/zsais/go-gin-prometheus/blob/master/middleware.go
+https://github.com/prometheus/client_golang/tree/master/prometheus
