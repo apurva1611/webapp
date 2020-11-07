@@ -15,13 +15,22 @@ func main() {
 	createDb()
 	createTable()
 	defer closeDB()
+
+	//prometheus.MustRegister(counter)
+
 	router := SetupRouter()
-	log.Fatal(router.Run(":8080"))
+
+	log.Fatal(router.Run())
 }
 
 // SetupRouter function gets updates User from db
 func SetupRouter() *gin.Engine {
 	router := gin.Default()
+
+	p := newPrometheus("gin")
+	p.Use(router)
+	// registry := prometheus.NewRegistry()
+	// registry.Register(requestsPerMinute)
 
 	v1 := router.Group("/v1")
 	authorized := v1.Group("/user/self")
@@ -58,12 +67,14 @@ func SetupRouter() *gin.Engine {
 func healthCheck(c *gin.Context) {
 	err := dbHealthCheck()
 	if err != nil {
+		log.Printf("DB HEALTHCHECK %s", err.Error())
 		c.JSON(http.StatusInternalServerError, "db health check failed.")
 		os.Exit(1)
 	}
 
 	err = kafkaHealthCheck(kafkaURL)
 	if err != nil {
+		log.Printf("KAFKA HEALTHCHECK %s", err.Error())
 		c.JSON(http.StatusInternalServerError, "kafka health check failed.")
 		os.Exit(2)
 	}
@@ -73,6 +84,8 @@ func healthCheck(c *gin.Context) {
 
 // GetUserSelf function gets User from db
 func GetUserSelf(c *gin.Context) {
+	log.Print("/user/self GET Self")
+
 	// get Authorization header "Bearer <token>"
 	authHeader := c.Request.Header.Get("Authorization")
 
@@ -93,6 +106,7 @@ func GetUserSelf(c *gin.Context) {
 
 // UpdateUserSelf function gets updates User from db
 func UpdateUserSelf(c *gin.Context) {
+	log.Print("/user/self PUT update")
 	authHeader := c.Request.Header.Get("Authorization")
 	fmt.Printf(authHeader)
 	id, err := ParseToken(authHeader)
@@ -132,6 +146,8 @@ func UpdateUserSelf(c *gin.Context) {
 
 // CreateUser function gets User from db
 func CreateUser(c *gin.Context) {
+	log.Print("/user POST Create")
+
 	user := User{}
 
 	producetest("kafka:9092", "watch", "key", "myfirstmessage")
@@ -193,6 +209,8 @@ func GetUserWithID(c *gin.Context) {
 	// prevent calling other handlers AuthMW and GetUserSelf
 	c.Abort()
 
+	log.Print("/user/:id GET User")
+
 	user := queryByID(id)
 
 	if user == nil {
@@ -202,6 +220,66 @@ func GetUserWithID(c *gin.Context) {
 
 	c.JSON(http.StatusOK, *user)
 }
+
+// // NewMetrics creates new Metrics instance.
+// func NewMetrics() Metrics {
+// 	subsystem := exporter
+// 	return Metrics{
+// 		TotalScrapes: prometheus.NewCounter(prometheus.CounterOpts{
+// 			Namespace: namespace,
+// 			Subsystem: subsystem,
+// 			Name:      "scrapes_total",
+// 			Help:      "Total number of times MySQL was scraped for metrics.",
+// 		}),
+// 		ScrapeErrors: prometheus.NewCounterVec(prometheus.CounterOpts{
+// 			Namespace: namespace,
+// 			Subsystem: subsystem,
+// 			Name:      "scrape_errors_total",
+// 			Help:      "Total number of times an error occurred scraping a MySQL.",
+// 		}, []string{"collector"}),
+// 		Error: prometheus.NewGauge(prometheus.GaugeOpts{
+// 			Namespace: namespace,
+// 			Subsystem: subsystem,
+// 			Name:      "last_scrape_error",
+// 			Help:      "Whether the last scrape of metrics from MySQL resulted in an error (1 for error, 0 for success).",
+// 		}),
+// 		MySQLUp: prometheus.NewGauge(prometheus.GaugeOpts{
+// 			Namespace: namespace,
+// 			Name:      "up",
+// 			Help:      "Whether the MySQL server is up.",
+// 		}),
+// 	}
+// }
+
+// var (
+// 	opsProcessed = promauto.NewCounter(prometheus.CounterOpts{
+// 		Name: "myapp_processed_ops_total",
+// 		Help: "The total number of processed events",
+// 	})
+// 	counter = prometheus.NewCounter(prometheus.CounterOpts{
+// 		Namespace: "logging",
+// 		Name:      "my_counter",
+// 		Help:      "This is my counter",
+// 	})
+// )
+
+// func recordMetrics() {
+// 	go func() {
+// 		for {
+// 			opsProcessed.Inc()
+// 			time.Sleep(2 * time.Second)
+// 		}
+// 	}()
+// }
+
+// func totalRequest() {
+// 	go func() {
+// 		for {
+// 			counter.Add(rand.Float64() * 5)
+// 			time.Sleep(2 * time.Second)
+// 		}
+// 	}()
+// }
 
 // CreatWatch function
 // func CreatWatch(c *gin.Context) {

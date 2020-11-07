@@ -1,7 +1,5 @@
 # webapp
-"pipeline check"
-Testing auto build - test
-demo changes
+Test changes
 #### To run the go server:
 ```
 docker build -t webapp .

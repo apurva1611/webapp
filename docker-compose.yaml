@@ -1,0 +1,107 @@
+version: '3'
+
+volumes:
+  prometheus_data: {}
+  grafana_data: {}
+
+services:
+  prometheus:
+    image: quay.io/prometheus/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./config/:/etc/prometheus/
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    ports:
+      - 9090:9090
+    links:
+      - mysqld-exporter
+      - node
+
+  # alertmanager:
+  #   image: quay.io/prometheus/alertmanager
+  #   container_name: alertmanager
+  #   volumes:
+  #     - ./alertmanager:/etc/alertmanager
+  #   command:
+  #     - '-config.file=/etc/alertmanager/alertmanager.yml'
+  #   ports:
+  #     - 9093:9093
+
+  # grafana:
+  #   image: grafana/grafana:latest
+  #   container_name: grafana
+  #   environment:
+  #     - GF_SECURITY_ADMIN_PASSWORD=secret
+  #     - GF_ALERTING_EXECUTE_ALERTS=false
+  #   volumes:
+  #     - grafana_data:/var/lib/grafana
+  #   ports:
+  #     - 3000:3000
+  #   links:
+  #     - prometheus
+  #   depends_on:
+  #     - prometheus
+
+  mysql:
+    image: mysql
+    container_name: mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=pass1234
+      - MYSQL_DATABASE=webappdb
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=pass1234
+    volumes:
+      - dbdata:/var/lib/mysql
+      # - ./mysql:/etc/mysql/conf.d
+      # - ~/var/mysql:/var/lib/mysql
+    ports:
+      - 3306:3306
+
+  webapp:
+    # image: achirashah/webapp-go   
+    container_name: webapp
+    environment:
+      kafkaURL: kafka:9092
+    build: .
+    ports:
+      - 8080:8080
+    depends_on:
+      - mysql      
+
+  mysqld-exporter:
+    image: quay.io/prometheus/mysqld-exporter
+    command:
+      - --collect.auto_increment.columns
+      - --collect.info_schema.query_response_time
+      - --collect.info_schema.tablestats
+    container_name: mysqld-exporter
+    environment:
+      - DATA_SOURCE_NAME=exporter:exporter@(mysql:3306)/
+      - --collect.auto_increment.columns=true
+      - --collect.info_schema.query_response_time=true
+    ports:
+      - 9104:9104
+    # volumes: 
+    #   - /root/mysqld-exporter/my.cnf:/etc/my.cnf    
+    links:
+      - mysql
+    depends_on:
+      - mysql
+
+  node:
+    image: quay.io/prometheus/node-exporter
+    container_name: node-exporter
+    ports:
+      - 9100:9100
+    volumes:
+      - "/:/rootfs"
+
+networks:
+  default:
+    driver: bridge
+ 
+volumes:
+  dbdata:
+  prometheus_data:      

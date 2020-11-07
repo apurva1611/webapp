@@ -129,10 +129,13 @@ func createTable() {
 }
 
 func queryByID(id string) *User {
+	//timer := prometheus.NewTimer(requestDuration)
+	//defer timer.ObserveDuration()
 	user := User{}
 	err := db.QueryRow(`SELECT id, firstname, lastname, username, created, modified 
 							FROM webappdb.users WHERE id = ?`, id).Scan(&user.ID, &user.FirstName, &user.LastName, &user.Username,
 		&user.AccountCreated, &user.AccountUpdated)
+	//time.Sleep(time.Duration(rand.NormFloat64()*10000+50000) * time.Microsecond)
 	if err != nil {
 		log.Printf(err.Error())
 		return nil
