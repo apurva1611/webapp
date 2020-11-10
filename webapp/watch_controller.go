@@ -10,7 +10,7 @@ import (
 	"github.com/google/uuid"
 )
 
-const kafkaURL = "kafka:9092"
+const kafkaURL = "app-prereq-kafka:9092"
 
 func CreateWatch(c *gin.Context) {
 	log.Print("/watch POST Create")
