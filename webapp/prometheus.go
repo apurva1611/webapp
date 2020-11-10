@@ -60,9 +60,9 @@ func newPrometheus(subsystem string, customMetricsList ...[]*Metric) *Prometheus
 	}
 
 	p := &Prometheus{
-		MetricsList:   metricsList,
-		MetricsPath:   "/metrics",
-		listenAddress: ":9901",
+		MetricsList: metricsList,
+		MetricsPath: "/metrics",
+		//listenAddress: ":9090",
 		ReqCntURLLabelMappingFn: func(c *gin.Context) string {
 			return c.Request.URL.Path // i.e. by default do nothing, i.e. return URL as is
 		},
