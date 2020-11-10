@@ -1,11 +1,9 @@
 package main
 
 import (
-	"fmt"
-	"log"
 	"net/http"
 	"time"
-
+	log "github.com/sirupsen/logrus"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
@@ -13,27 +11,27 @@ import (
 const kafkaURL = "kafka:9092"
 
 func CreateWatch(c *gin.Context) {
-	log.Print("/watch POST Create")
+	log.Info("/watch POST watch API")
 
 	produceTopic := "watch"
 
 	watch := WATCH{}
 	authHeader := c.Request.Header.Get("Authorization")
-	fmt.Printf(authHeader)
 	id, err := ParseToken(authHeader)
 	if err != nil {
+		log.Error("/watch POST watch API error: Unauthorized token error")
 		c.JSON(http.StatusUnauthorized, "Unauthorized")
 		return
 	}
 
 	qUser := queryById(id)
 	if qUser == nil {
+		log.Error("/watch POST watch API error: User not found error")
 		c.JSON(http.StatusNotFound, "User not found")
 		return
 	}
 
 	if c.ShouldBindJSON(&watch) == nil {
-		fmt.Printf(watch.Zipcode)
 		// generate (Version 4) UUID
 		uid, _ := uuid.NewRandom()
 		watch.ID = uid.String()
@@ -50,13 +48,12 @@ func CreateWatch(c *gin.Context) {
 			uid_two, _ := uuid.NewRandom()
 			watch.Alerts[i].ID = uid_two.String()
 			watch.Alerts[i].WatchId = watch.ID
-			fmt.Println("id")
-			fmt.Println(watch.Alerts[i].WatchId)
 			watch.Alerts[i].AlertCreated = watch.WatchCreated
 			watch.Alerts[i].AlertUpdated = watch.WatchCreated
 		}
 		// add watch to watch table
 		if !insertWatch(watch) {
+			log.Error("/watch POST watch API error: Db connection error")
 			c.JSON(http.StatusBadRequest, "error in watch")
 			return
 		}
@@ -65,6 +62,7 @@ func CreateWatch(c *gin.Context) {
 			//fmt.println("Watch_id")
 			//fmt.println(watch.ID)
 			if !insertAlert(watch.Alerts[i]) {
+				log.Error("/watch POST watch API error: Alerts incorrect")
 				c.JSON(http.StatusBadRequest, "Alerts are incorrect")
 				return
 			}
@@ -72,7 +70,8 @@ func CreateWatch(c *gin.Context) {
 
 		resp := watch
 
-		fmt.Printf("SENDING resp to watch topic:\n %s", resp.ID)
+		log.Info("/watch POST watch API :SENDING resp to watch topic:\n %s", resp.ID)
+		log.Info("/watch POST watch API kafka details sent to :" + kafkaURL  + " and topic is: " + produceTopic)
 		produce(kafkaURL, produceTopic, resp, "insert")
 
 		// remove watch_id from alerts before sending response
@@ -81,91 +80,101 @@ func CreateWatch(c *gin.Context) {
 		}
 
 		// RETURN THE INSERTED WATCH
+		log.Info("/watch POST watch API succeeded")
 		c.JSON(http.StatusCreated, resp)
 
 	} else {
-		fmt.Printf("Error")
+		log.Error("/watch POST watch API error: Fields missing error")
 		c.JSON(http.StatusBadRequest, "400 Bad request no queries made")
 	}
 }
 
 func GetAllWatches(c *gin.Context) {
-	log.Print("/watches GET All watches")
+	log.Info("/watches GET All watches API")
 
 	authHeader := c.Request.Header.Get("Authorization")
-	fmt.Printf(authHeader)
 	id, err := ParseToken(authHeader)
 	if err != nil {
+		log.Error("/watches GET All watches API error: Token not found error")
 		c.JSON(http.StatusUnauthorized, "Unauthorized")
 		return
 	}
 	qUser := queryById(id)
 	if qUser == nil {
+		log.Error("/watches GET All watches API error: User not found error")
 		c.JSON(http.StatusNotFound, "User not found")
 		return
 	}
 	qWatches := queryWatchByUserId(id)
 	if qWatches == nil {
+		log.Error("/watches GET All watches API error: Watches not found error")
 		c.JSON(http.StatusUnauthorized, "Watches not found")
 		return
 	}
+	log.Info("/watches GET All watches API succeeded")
 	c.JSON(http.StatusOK, qWatches)
 }
 
 func GetWatchById(c *gin.Context) {
-	log.Print("/watch/:id GET Watch")
+	log.Info("/watch Get watch by id API")
 
 	authHeader := c.Request.Header.Get("Authorization")
-	fmt.Printf(authHeader)
 	id, err := ParseToken(authHeader)
 	if err != nil {
+		log.Error("/watch Get watch by id API error: token error")
 		c.JSON(http.StatusUnauthorized, "Unauthorized")
 		return
 	}
 
 	qUser := queryById(id)
 	if qUser == nil {
+		log.Error("/watch Get watch by id API error: User not found error")
 		c.JSON(http.StatusNotFound, "User not found")
 		return
 	}
 	watch_id := c.Param("id")
 	watch := queryByWatchID(watch_id)
 	if watch == nil {
+		log.Error("/watch Get watch by id API error: Watch id does not exist")
 		c.JSON(http.StatusNotFound, "watch with id: "+watch_id+" does not exist")
 		return
 	}
 	if qUser.ID != watch.UserId {
+		log.Error("/watch Get watch by id API error: User not owner of the watch error")
 		c.JSON(http.StatusUnauthorized, "User not owner of the watch")
 		return
 
 	}
-
+	log.Info("/watch Get watch by id API succeeded")
 	c.JSON(http.StatusOK, watch)
 }
 
 func UpdateWatchById(c *gin.Context) {
-	log.Print("/watch/:id PUT Update")
+	log.Info("/watch PUT watch by id API")
 
 	authHeader := c.Request.Header.Get("Authorization")
-	fmt.Printf(authHeader)
 	id, err := ParseToken(authHeader)
 	if err != nil {
+		log.Error("/watch PUT watch by id API error: Token error")
 		c.JSON(http.StatusUnauthorized, "Unauthorized")
 		return
 	}
 
 	qUser := queryByID(id)
 	if qUser == nil {
+		log.Error("/watch PUT watch by id API error: User not found error")
 		c.JSON(http.StatusNotFound, "User self not found")
 		return
 	}
 	watch_id := c.Param("id")
 	watch := queryByWatchID(watch_id)
 	if watch == nil {
+		log.Error("/watch PUT watch by id API error: watch id does not exist")
 		c.JSON(http.StatusNotFound, "watch with id: "+watch_id+" does not exist")
 		return
 	}
 	if qUser.ID != watch.UserId {
+		log.Error("/watch PUT watch by id API error: User not owner of the watch")
 		c.JSON(http.StatusUnauthorized, "User not owner of the watch")
 		return
 
@@ -193,67 +202,74 @@ func UpdateWatchById(c *gin.Context) {
 		}
 
 		if !updateWatch(updatedWatch) {
+			log.Error("/watch PUT watch by id API error: DB update watch failed")
 			c.JSON(http.StatusBadRequest, "400 Bad request")
 			return
 		}
-		fmt.Printf("Error here")
 		for i := range updatedWatch.Alerts {
 			if !insertAlert(updatedWatch.Alerts[i]) {
+				log.Error("/watch PUT watch by id API error: Db update failed")
 				c.JSON(http.StatusBadRequest, "Alerts are incorrect")
 				return
 			}
 		}
 
 		produceTopic := "watch"
-		fmt.Printf("SENDING updated watch to watch topic:\n %+v", updatedWatch)
+		log.Info("SENDING updated watch to watch topic")
 		produce(kafkaURL, produceTopic, updatedWatch, "update")
-
+		log.Info("/watch PUT watch by id API succeeded")
 		c.Status(http.StatusNoContent)
 	} else {
+		log.Error("/watch PUT watch by id API error: Fields missing error")
 		c.JSON(http.StatusBadRequest, "400 Bad request")
 	}
 }
 
 func DeleteWatch(c *gin.Context) {
-	log.Print("/watch/:id DELETE Delete")
+	log.Info("/watch DELETE watch by id API")
 	authHeader := c.Request.Header.Get("Authorization")
-	fmt.Printf(authHeader)
 	id, err := ParseToken(authHeader)
 	if err != nil {
+		log.Error("/watch DELETE watch by id API error: Token error")
 		c.JSON(http.StatusUnauthorized, "Unauthorized")
 		return
 	}
 
 	qUser := queryByID(id)
 	if qUser == nil {
+		log.Error("/watch DELETE watch by id API error:User not found error")
 		c.JSON(http.StatusNotFound, "User self not found")
 		return
 	}
 	watch_id := c.Param("id")
 	watch := queryByWatchID(watch_id)
 	if watch == nil {
+		log.Error("/watch DELETE watch by id API error: Watch id does not exist error")
 		c.JSON(http.StatusNotFound, "watch with id: "+watch_id+" does not exist")
 		return
 	}
 	if qUser.ID != watch.UserId {
+		log.Error("/watch DELETE watch by id API error: User not owner of the watch error")
 		c.JSON(http.StatusUnauthorized, "User not owner of the watch")
 		return
 
 	}
 	for i := range watch.Alerts {
 		if !deleteAlert(watch.Alerts[i].ID) {
+			log.Error("/watch DELETE watch by id API error: DB connection failed error")
 			c.JSON(http.StatusBadRequest, "400 Bad request")
 			return
 		}
 	}
 	if !deleteWatch(watch_id) {
+		log.Error("/watch DELETE watch by id API error: DB connection failed error")
 		c.JSON(http.StatusBadRequest, "400 Bad request")
 		return
 	}
 
 	produceTopic := "watch"
-	fmt.Printf("SENDING watch to delete on watch topic:\n %+v", watch)
+	log.Info("SENDING watch to delete on watch topic")
 	produce(kafkaURL, produceTopic, *watch, "delete")
-
+    log.Info("/watch DELETE watch by id API succeeded")
 	c.Status(http.StatusNoContent)
 }
