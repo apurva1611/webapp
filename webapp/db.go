@@ -7,7 +7,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"fmt"
 	"time"
-
+	"os"
 	_ "github.com/go-sql-driver/mysql"
 )
 
