@@ -3,12 +3,13 @@ package main
 import (
 	"net/http"
 	"time"
-	log "github.com/sirupsen/logrus"
+
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	log "github.com/sirupsen/logrus"
 )
 
-const kafkaURL = "app-prereq-kafka:9092"
+const kafkaURL = "app-prereq-kafka.monitoring:9092"
 
 func CreateWatch(c *gin.Context) {
 	log.Info("/watch POST watch API")
@@ -71,7 +72,7 @@ func CreateWatch(c *gin.Context) {
 		resp := watch
 
 		log.Info("/watch POST watch API :SENDING resp to watch topic:\n %s", resp.ID)
-		log.Info("/watch POST watch API kafka details sent to :" + kafkaURL  + " and topic is: " + produceTopic)
+		log.Info("/watch POST watch API kafka details sent to :" + kafkaURL + " and topic is: " + produceTopic)
 		produce(kafkaURL, produceTopic, resp, "insert")
 
 		// remove watch_id from alerts before sending response
@@ -270,6 +271,6 @@ func DeleteWatch(c *gin.Context) {
 	produceTopic := "watch"
 	log.Info("SENDING watch to delete on watch topic")
 	produce(kafkaURL, produceTopic, *watch, "delete")
-    log.Info("/watch DELETE watch by id API succeeded")
+	log.Info("/watch DELETE watch by id API succeeded")
 	c.Status(http.StatusNoContent)
 }
