@@ -4,8 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
-
+	log "github.com/sirupsen/logrus"
 	"github.com/segmentio/kafka-go"
 )
 
@@ -37,9 +36,10 @@ func produce(kafkaURL, topic string, watch WATCH, msgKey string) {
 
 	err := writer.WriteMessages(context.Background(), msg)
 	if err != nil {
+		log.Error("Error in PRODUCE Topic: %s, Message ID %s,", topic, string(msg.Key))
 		fmt.Println(err)
 	}
-
+	log.Info("PRODUCE Topic: %s, Message ID %s,", topic, string(msg.Key))
 	log.Printf("PRODUCE Topic: %s, Message ID %s", topic, string(msg.Key))
 }
 
@@ -54,4 +54,5 @@ func producetest(kafkaURL, topic string, watch string, msgKey string) {
 	if err != nil {
 		fmt.Println(err)
 	}
+	log.Info("PRODUCE Topic: %s, Message ID %s,", topic, string(msg.Key))
 }
