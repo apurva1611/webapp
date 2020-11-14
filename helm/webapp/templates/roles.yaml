@@ -1,0 +1,44 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: default
+  name: pod-reader-{{ include "webapp.fullname" . }}
+rules:
+- apiGroups: [""] # "" indicates the core API group
+  resources: ["pods","secrets", "configmaps"]
+  verbs: ["get", "watch", "list"]
+# ---
+# apiVersion: rbac.authorization.k8s.io/v1
+# kind: Role
+# metadata:
+#   # "namespace" omitted since ClusterRoles are not namespaced
+#   name: secret-reader-{{ include "webapp.fullname" . }}
+# rules:
+# - apiGroups: [""]
+#   #
+#   # at the HTTP level, the name of the resource for accessing Secret
+#   # objects is "secrets"
+#   resources: ["secrets", "configmaps"]
+#   verbs: ["get", "watch", "list"]
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "webapp.fullname" . }}-schedule-agents
+  namespace: default
+  labels:
+    "helm.sh/chart": "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    "app.kubernetes.io/managed-by": "{{ .Release.Service }}"
+    "app.kubernetes.io/instance": "{{ .Release.Name }}"
+roleRef:
+  # apiGroup: rbac.authorization.k8s.io
+  # kind: Role
+  # name: pod-reader-{{ include "webapp.fullname" . }}
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: secret-reader-{{ include "webapp.fullname" . }}
+subjects:
+- kind: ServiceAccount
+  name: {{ include "webapp.serviceAccountName" . }}
+  namespace: default
