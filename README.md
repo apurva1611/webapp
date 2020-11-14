@@ -45,6 +45,7 @@ It returns user data with \<user-id>.
 "Testing ci pipeline of jenkins."
 sudo docker exec -it mysql mysql -u root -p
 
+
 Start/stop mysql local server:
 sudo service mysql start/stop
 
@@ -54,3 +55,4 @@ sudo service mysql start/stop
 Refrence for prometheus
 https://github.com/zsais/go-gin-prometheus/blob/master/middleware.go
 https://github.com/prometheus/client_golang/tree/master/prometheus
+
