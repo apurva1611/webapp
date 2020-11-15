@@ -1,0 +1,75 @@
+version: '2.3'
+services:
+
+  zookeeper:
+    hostname: zookeeper
+    image: wurstmeister/zookeeper
+    expose:
+    - "2181"
+    ports:
+    - "2181:2181"
+  
+  kafka:
+    image: wurstmeister/kafka
+    env_file:
+    - kafka/kafka-variables.env
+    environment:
+      KAFKA_CREATE_TOPICS: watch:1:1,weather:1:1
+    depends_on:
+    - zookeeper
+    ports:
+    - '9092:9092'
+    - '8082:8082'
+    - '8083:8083'
+
+  mysql:
+    image: mysql
+    container_name: mysql
+    volumes:
+      - dbdata:/var/lib/mysql
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=pass1234
+      - MYSQL_MULTIPLE_DATABASES=webappdb, notifierdb, pollerdb
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=pass1234
+    ports:
+      - "3306:3306"
+
+  webapp:
+    image: achirashah/webapp-go   
+    container_name: webapp
+    environment:
+      kafkaURL: kafka:9092
+    restart: always
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+    - mysql 
+    - kafka 
+
+  poller:
+    image: achirashah/poller
+    container_name: poller
+    environment:
+      kafkaURL: kafka:9092
+    restart: always
+    build: ../../poller/poller
+    depends_on:
+    - mysql 
+    - kafka
+
+  notifier:
+    image: achirashah/notifier
+    container_name: notifier
+    environment:
+      kafkaURL: kafka:9092
+    restart: always
+    build: ../../notifier/notifier
+    depends_on:
+    - mysql 
+    - kafka  
+
+volumes:
+  dbdata:

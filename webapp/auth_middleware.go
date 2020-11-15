@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strings"
 	"time"
-
+	log "github.com/sirupsen/logrus"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/dgrijalva/jwt-go/request"
 	"github.com/gin-gonic/gin"
@@ -65,7 +65,7 @@ func ParseToken(authHeader string) (string, error) {
 
 // AuthMW represents functin to authenticate token.
 func AuthMW(secret string) gin.HandlerFunc {
-	fmt.Println("secret" + secret)
+	//fmt.Println("secret" + secret)
 	return func(c *gin.Context) {
 		_, err := request.ParseFromRequest(c.Request, request.OAuth2Extractor, func(token *jwt.Token) (interface{}, error) {
 			b := []byte(secret)
@@ -73,6 +73,7 @@ func AuthMW(secret string) gin.HandlerFunc {
 		})
 
 		if err != nil {
+			log.Error("Token incorrect Error")
 			c.AbortWithError(http.StatusUnauthorized, err)
 		}
 	}
