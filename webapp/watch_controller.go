@@ -9,7 +9,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-const kafkaURL = "app-prereq-kafka.monitoring:9092"
+const kafkaURL = "app-prereq-kafka:9092"
 
 func CreateWatch(c *gin.Context) {
 	log.Info("/watch POST watch API")
