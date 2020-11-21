@@ -1,7 +1,7 @@
 node {
 
     def registryCredential = 'apurvamathur'
-	def githubCredential = 'GitHub'
+    def githubCredential = 'GitHub'
     def commit_id
 	def dockerImage
 

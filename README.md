@@ -1,6 +1,7 @@
 # webapp
 Test changes
 "Pipeline check"
+Demo assignment7
 #### To run the go server:
 ```
 docker build -t webapp .
@@ -51,7 +52,7 @@ Start/stop mysql local server:
 sudo service mysql start/stop
 
 "cHECK pipeline"
-"pIPELINE"
+"pIPELINE check"
 
 Refrence for prometheus
 https://github.com/zsais/go-gin-prometheus/blob/master/middleware.go

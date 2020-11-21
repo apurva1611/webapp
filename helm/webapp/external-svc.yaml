@@ -1,0 +1,10 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: app-prereq-kafka
+  namespace: api
+spec:
+  type: ExternalName
+  externalName: app-prereq-kafka.monitoring.svc.cluster.local
+  ports:
+  - port: 9092
