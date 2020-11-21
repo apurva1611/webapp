@@ -88,7 +88,6 @@ node {
             createNamespace('api')
             serviceKafka()
             helmInstallWebapp(webappReleaseName)
-            helmFindingWebappIP (webappReleaseName)
         }
 
     }

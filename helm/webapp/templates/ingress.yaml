@@ -8,7 +8,7 @@ metadata:
     kubernetes.io/tls-acme: "true"
 spec:
   rules:
-  - host: app.prod.apurvamathur.me
+  - host: app.prod.achirashah.com
     http:
       paths:
       - path: /
