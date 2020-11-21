@@ -7,11 +7,6 @@ metadata:
     cert-manager.io/cluster-issuer: "letsencrypt-staging"
     kubernetes.io/tls-acme: "true"
 spec:
-  tls:
-    - hosts:
-      - prod.apurvamathur.me
-      - app.prod.apurvamathur.me
-      secretName: secret-tls
   rules:
   - host: app.prod.apurvamathur.me
     http:
