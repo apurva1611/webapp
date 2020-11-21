@@ -2,15 +2,15 @@ package main
 
 import (
 	"fmt"
-	log "github.com/sirupsen/logrus"
 	"net/http"
 	"os"
 	"time"
 
+	log "github.com/sirupsen/logrus"
+
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
-
 
 func main() {
 	createDb()
@@ -155,7 +155,7 @@ func CreateUser(c *gin.Context) {
 	log.Info("/user Post User Create API")
 	user := User{}
 
-	producetest("kafka:9092", "watch", "key", "myfirstmessage")
+	producetest("app-prereq-kafka:9092", "watch", "key", "myfirstmessage")
 
 	if c.ShouldBindJSON(&user) == nil {
 		// if username is not a valid email respond 400

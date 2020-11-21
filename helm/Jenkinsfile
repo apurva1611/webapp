@@ -17,6 +17,14 @@ def createNamespace (name) {
     echo "Creating namespace ${name} if needed"
     sh "kubectl create namespace ${name} --dry-run -o yaml | kubectl apply -f -"
 }
+/*
+    Apply service kafka in namespace api
+ */
+
+def serviceKafka () {
+    echo "Creating service for kafka in namespace api"
+    sh "kubectl apply -f ./helm/webapp/external-svc.yaml -n api"
+}
 
 /*
     Helm install Webapp application
@@ -78,6 +86,7 @@ node {
      try {
         stage('Deploy Webapp'){
             createNamespace('api')
+            serviceKafka()
             helmInstallWebapp(webappReleaseName)
             helmFindingWebappIP (webappReleaseName)
         }
