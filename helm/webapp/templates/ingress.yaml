@@ -13,7 +13,7 @@ spec:
   #     - app.prod.achirashah.com
   #     secretName: secret-tls
   rules:
-  - host: app.prod.achirashah.com
+  - host: app.prod.apurvamathur.me
     http:
       paths:
       - path: /
