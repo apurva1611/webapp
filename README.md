@@ -49,7 +49,7 @@ sudo docker exec -it mysql mysql -u root -p
 Start/stop mysql local server:
 sudo service mysql start/stop
 
-"cHECK pipeline"
+"cHECK pipeline for a8"
 "pIPELINE check"
 
 Refrence for prometheus
