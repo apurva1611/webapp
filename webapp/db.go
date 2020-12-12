@@ -4,14 +4,16 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
-	log "github.com/sirupsen/logrus"
 	"fmt"
-	"time"
 	"os"
+	"time"
+
 	_ "github.com/go-sql-driver/mysql"
+	log "github.com/sirupsen/logrus"
 )
 
 var db *sql.DB
+
 // const (
 // 	username = "root"
 // 	password = "Rajuabha25!"
@@ -25,17 +27,15 @@ var db *sql.DB
 // 	return fmt.Sprintf("%s:%s@tcp(%s)/%s", username, password, hostname, dbname)
 // }
 const (
-	username = "root"
-	password = "pass1234"
-	port     = ":3306"
-	dbname   = "webappdb"
+	username = "adminuser"
+	password = "Pass1234"
+	// port     = ":3306"
+	dbname = "webappdb"
 )
-
-
 
 func dsn() string {
 	rdsurl := os.Getenv("rdsurl")
-	hostname := rdsurl + port
+	hostname := rdsurl
 	return fmt.Sprintf("%s:%s@tcp(%s)/%s", username, password, hostname, dbname)
 }
 
@@ -341,7 +341,7 @@ func queryAlertsByWatchId(id string) *[]ALERT {
 		log.Error(err.Error())
 		return nil
 	}
-    log.Info("GET query alerts by watch id succeeded")
+	log.Info("GET query alerts by watch id succeeded")
 	return &alerts
 
 }

@@ -12,7 +12,7 @@ spec:
       - app.prod.apurvamathur.me
       secretName: letsencrypt-staging
   rules:
-  - host: app.prod.apurvamathur.me
+  - host: app.prod.achirashah.com
     http:
       paths:
       - path: /
