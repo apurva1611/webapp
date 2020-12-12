@@ -7,8 +7,12 @@ metadata:
     cert-manager.io/cluster-issuer: "letsencrypt-staging"
     kubernetes.io/tls-acme: "true"
 spec:
+  tls:
+    - hosts:
+      - app.prod.apurvamathur.me
+      secretName: letsencrypt-staging
   rules:
-  - host: app.prod.apurvamathur.me
+  - host: app.prod.achirashah.com
     http:
       paths:
       - path: /
