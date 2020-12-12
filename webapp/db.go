@@ -27,7 +27,7 @@ var db *sql.DB
 // 	return fmt.Sprintf("%s:%s@tcp(%s)/%s", username, password, hostname, dbname)
 // }
 const (
-	username = "adminuser"
+	username = "adminuser@poller-nstance"
 	password = "Pass1234"
 	// port     = ":3306"
 	dbname = "webappdb"
